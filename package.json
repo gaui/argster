@@ -1,0 +1,31 @@
+{
+  "name": "argster",
+  "version": "1.0.0",
+  "description": "Just a simple command/argument manager",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "author": "Gudjon Jonsson <gaui@gaui.is> (https://gaui.is)",
+  "license": "MIT",
+  "scripts": {
+    "build": "yarn build:default && yarn build:es",
+    "build:default": "tsc",
+    "build:es": "tsc -m es2015 -t es2015 --outDir lib/es",
+    "push": "yarn build && yarn publish",
+    "lint": "tslint -p .",
+    "format": "prettier \"./{src,__tests__,examples}/**/*.{js,jsx,ts,tsx,json,md}\" --write"
+  },
+  "dependencies": {
+    "glob": "^7.1.2",
+    "@types/glob": "^5.0.35",
+    "@types/node": "^10.5.5",
+    "parcel-bundler": "^1.9.7",
+    "prettier": "^1.14.0",
+    "ts-node": "^7.0.0",
+    "tslint": "^5.11.0",
+    "tslint-config-prettier": "^1.14.0",
+    "typescript": "^3.0.1"
+  },
+  "browser": {
+    "fs": false
+  }
+}

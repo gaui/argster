@@ -1,0 +1,9 @@
+.*
+logs
+*.log
+npm*
+yarn*
+tslint.json
+tsconfig.json
+examples/
+src/

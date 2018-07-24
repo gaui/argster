@@ -1,0 +1,15 @@
+{
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "rules": {
+    "curly": [true, "ignore-same-line"],
+    "max-classes-per-file": [true, 3],
+    "variable-name": [true, "allow-leading-underscore"]
+  },
+  "linterOptions": {
+    "exclude": [
+      "dist/",
+      "lib/",
+      "node_modules/"
+    ]
+  }
+}
