@@ -1,15 +1,25 @@
 import * as fs from 'fs';
 import * as glob from 'glob';
 import {
+  CommandArgumentInput,
   IArgumentFileContents,
-  IArgumentFiles,
-  IBuilderOptions
-} from './interfaces';
+  IArgumentFilePatterns,
+  IBuilderOptions,
+  ICommandArgument,
+  ICommandEvalValueInput
+} from './api';
+
+/* tslint:disable:max-classes-per-file */
 
 class BuilderUtils {
   public static get defaultOptions(): IBuilderOptions {
     return {
-      dynamicVariables: {}
+      dynamicVariables: {},
+      rootDir: process.cwd(),
+      sentencesInQuotes: true,
+      skipUnresolvedVariables: false,
+      variablePattern: /\$\{(.+)\}/,
+      warnUnresolvedVariables: true
     };
   }
 
@@ -20,22 +30,27 @@ class BuilderUtils {
   }
 }
 
-class FileUtil {
+class FileUtils {
   public static computeFiles(
-    argumentFilePatterns: IArgumentFiles[]
-  ): IArgumentFiles[] {
+    argumentFilePatterns: IArgumentFilePatterns[],
+    rootDir: string
+  ): IArgumentFilePatterns[] {
     argumentFilePatterns.forEach(argument => {
-      argument.patterns = this.searchFilesForPatterns(argument.patterns);
+      const search = this.searchFilesForPatterns(argument.patterns, rootDir);
+
+      if (search.length) {
+        argument.patterns = search;
+      }
     });
 
     return argumentFilePatterns;
   }
 
   public static computeFileContents(
-    argumentFilePatterns: IArgumentFiles[]
+    argumentFilePatterns: IArgumentFilePatterns[]
   ): IArgumentFileContents[] {
     const newArray = [] as IArgumentFileContents[];
-    argumentFilePatterns.forEach((argument: IArgumentFiles) => {
+    argumentFilePatterns.forEach((argument: IArgumentFilePatterns) => {
       const newArgument = {} as IArgumentFileContents;
       newArgument.files = argument;
       newArgument.contents = argument.patterns
@@ -54,12 +69,94 @@ class FileUtil {
     return contentArray;
   }
 
-  public static searchFilesForPatterns(patterns: string[]): string[] {
+  public static searchFilesForPatterns(
+    patterns: string[],
+    rootDir: string
+  ): string[] {
     const searchPattern = patterns.join('|');
-    const globOptions = { matchBase: true, nodir: true };
+    const globOptions = {
+      cwd: rootDir,
+      nodir: true,
+      realpath: true,
+      root: rootDir
+    };
 
     return glob.sync(searchPattern, globOptions);
   }
 }
 
-export { BuilderUtils, FileUtil };
+class LogUtils {
+  // tslint:disable-next-line:no-console
+  public static warn = console.warn;
+}
+
+class CommandUtils {
+  public static parseArgumentInput(
+    args: CommandArgumentInput
+  ): ICommandArgument[] {
+    const argArray: ICommandArgument[] | any = (Array.isArray(args)
+      ? args
+      : [args]
+    )
+      .map(
+        (a: ICommandArgument): ICommandArgument | undefined => {
+          return new Predicate([
+            {
+              predicate: val => typeof val === 'object',
+              replacer: val => val
+            },
+            {
+              predicate: val => typeof val === 'string',
+              replacer: (val: string) => ({ argument: val })
+            }
+          ]).first(a);
+        }
+      )
+      .filter(Boolean);
+
+    return argArray || [];
+  }
+}
+
+class Predicate {
+  private predicates: Array<ICommandEvalValueInput<any, any>>;
+  constructor(
+    predicates?:
+      | Array<ICommandEvalValueInput<any, any>>
+      | ICommandEvalValueInput<any, any>
+  ) {
+    if (!predicates) return;
+
+    if (!Array.isArray(predicates)) {
+      predicates = [predicates];
+    }
+
+    this.predicates = predicates;
+  }
+
+  public first(value: any): any | undefined {
+    if (!value) return;
+
+    const obj = this.predicates.find(x => x.predicate(value));
+
+    if (!obj) return;
+
+    return obj.replacer(value);
+  }
+
+  public all(value: any): any | undefined {
+    if (!value) return;
+
+    let newValue: any = value;
+
+    this.predicates.forEach(({ predicate, replacer }) => {
+      if (predicate && replacer && predicate(value)) {
+        newValue = replacer(newValue);
+      }
+    });
+
+    return newValue;
+  }
+}
+
+export { BuilderUtils, CommandUtils, FileUtils, LogUtils, Predicate };

@@ -1,0 +1,16 @@
+{
+  "presets": [
+    ["@babel/env", {
+      "targets": {
+        "node": "8"
+      },
+      "shippedProposals": true
+    }],
+    "@babel/typescript"
+  ],
+  "plugins": [
+    ["@babel/transform-modules-commonjs", {
+      "allowTopLevelThis": true
+    }]
+  ]
+}

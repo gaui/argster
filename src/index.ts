@@ -1,12 +1,12 @@
-import Builder from './builder';
 import {
-  IArgumentFiles,
+  IArgumentFilePatterns,
   IBuilder,
   IBuilderOptions,
   ICommand,
   ICommandProcessOutput,
   IDynamicVariables
-} from './interfaces';
+} from './api';
+import Builder from './builder';
 
 export {
   Builder,
@@ -15,5 +15,5 @@ export {
   ICommandProcessOutput,
   IDynamicVariables,
   IBuilderOptions,
-  IArgumentFiles
+  IArgumentFilePatterns
 };

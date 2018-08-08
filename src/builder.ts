@@ -1,10 +1,10 @@
-import Command from './command';
 import {
-  IArgumentFiles,
+  IArgumentFilePatterns,
   IBuilder,
   IBuilderOptions,
   ICommand
-} from './interfaces';
+} from './api';
+import { Command } from './command';
 import { BuilderUtils } from './utils';
 
 class Builder implements IBuilder {
@@ -16,10 +16,13 @@ class Builder implements IBuilder {
     this.options = BuilderUtils.parseOptions(options);
   }
 
-  public createCommand(filePatterns: IArgumentFiles[]): ICommand {
-    const command = new Command(filePatterns, this.options);
-    this.commands.push(command);
-    return command;
+  public createCommand(
+    command: string,
+    filePatterns?: IArgumentFilePatterns[]
+  ): ICommand {
+    const cmd = new Command(this.options, command, filePatterns);
+    this.commands.push(cmd);
+    return cmd;
   }
 
   public getAllCommands(): ICommand[] {

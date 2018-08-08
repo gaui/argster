@@ -1,55 +1,117 @@
 import { exec } from 'child_process';
-import * as util from 'util';
 import {
   IArgumentFileContents,
-  IArgumentFiles,
+  IArgumentFilePatterns,
   IBuilderOptions,
   ICommand,
   ICommandArgument,
-  ICommandProcessOutput,
-  IDynamicVariables
-} from './interfaces';
-import { FileUtil } from './utils';
+  ICommandEvalValueInput,
+  ICommandProcess,
+  ICommandProcessOutput
+} from './api';
+import { VariableUnresolvableException } from './exceptions';
+import features from './features';
+import { CommandUtils, FileUtils, LogUtils, Predicate } from './utils';
 
-const execAsync = util.promisify(exec);
+/* tslint:disable:no-console */
+const stdoutLog = (str: string) => process.stdout.write(str);
+const stderrLog = (str: string) => process.stderr.write(str);
 
 class Command implements ICommand {
-  public files: IArgumentFiles[];
-  public arguments: ICommandArgument[];
+  public files: IArgumentFilePatterns[] = [];
+  public command: string;
+  public arguments: ICommandArgument[] = [];
   private builderOptions: IBuilderOptions;
 
-  constructor(filePatterns: IArgumentFiles[], builderOptions: IBuilderOptions) {
+  constructor(
+    builderOptions: IBuilderOptions,
+    command: string,
+    filePatterns?: IArgumentFilePatterns[]
+  ) {
+    this.command = command;
     this.builderOptions = builderOptions;
-    this.files = FileUtil.computeFiles(filePatterns);
-    const contents = FileUtil.computeFileContents(this.files);
-    this.arguments = this.computeArguments(contents);
+
+    if (filePatterns) {
+      this.files = FileUtils.computeFiles(
+        filePatterns,
+        builderOptions.rootDir as string
+      );
+      const contents = FileUtils.computeFileContents(this.files);
+      this.arguments = this.computeArguments(contents);
+    }
   }
 
-  public exec(): Promise<ICommandProcessOutput> {
-    return execAsync(this.toString());
+  public exec(): ICommandProcess {
+    const cmd = exec(this.toString());
+    const promise = new Promise<ICommandProcessOutput>((resolve, reject) => {
+      const successFn = (code: number, signal: string) => {
+        const output = { code, signal } as ICommandProcessOutput;
+
+        if (code === 0) {
+          resolve(output);
+        } else {
+          reject(output);
+        }
+      };
+
+      cmd.on('exit', successFn);
+      cmd.on('close', successFn);
+      cmd.on('error', (err: any) => reject(err));
+    });
+
+    cmd.stdout.on('data', stdoutLog);
+    cmd.stderr.on('data', stderrLog);
+
+    const commandProcess: ICommandProcess = {
+      command: this.toString(),
+      promise
+    };
+
+    return commandProcess;
   }
 
-  public prependArgument(argument: string, prefix?: string): ICommandArgument {
-    const arg = this.createArgument(argument, prefix);
-    this.arguments.unshift(arg);
-    return arg;
+  public prependArgument(argument: ICommandArgument): void {
+    this.argumentHelper(argument, (arg: ICommandArgument) => {
+      this.arguments.unshift(arg);
+    });
   }
 
-  public appendArgument(argument: string, prefix?: string): ICommandArgument {
-    const arg = this.createArgument(argument, prefix);
-    this.arguments.push(arg);
-    return arg;
+  public appendArgument(argument: ICommandArgument): void {
+    this.argumentHelper(argument, (arg: ICommandArgument) => {
+      this.arguments.push(arg);
+    });
+  }
+
+  public toArray(): ReadonlyArray<string> {
+    const initArray: any = ([[]] as any).concat(this.arguments);
+    const argArray = initArray
+      .map((arg: ICommandArgument) => [arg.prefix, arg.argument])
+      .reduce((prev: ICommandArgument[], cur: ICommandArgument[]) =>
+        prev.concat(cur)
+      )
+      .filter(Boolean) as ReadonlyArray<string>;
+
+    return argArray;
   }
 
   public toString(): string {
-    return this.arguments
+    const argString = this.arguments
       .map((arg: ICommandArgument) => arg.toString())
       .join('')
       .trim();
+
+    return `${this.command}${argString ? ' ' + argString : ''}`;
   }
 
-  private createArgument(argument: string, prefix?: string): ICommandArgument {
-    return new CommandArgument(this.builderOptions, argument, prefix);
+  private createArgument(
+    argument: string,
+    prefix?: string
+  ): ICommandArgument | null {
+    const newObj = new CommandArgument(this.builderOptions, argument, prefix);
+
+    if (Object.keys(newObj).length) return newObj;
+
+    return null;
   }
 
   private computeArguments(
@@ -59,16 +121,30 @@ class Command implements ICommand {
     for (const arg of contents) {
       arg.contents.forEach((line: string) => {
         const argument = this.createArgument(line, arg.files.prefix);
-        commands.push(argument);
+
+        if (argument) {
+          commands.push(argument);
+        }
       });
     }
 
     return commands;
   }
+
+  private argumentHelper(
+    argument: ICommandArgument,
+    callback: (arg: ICommandArgument) => void
+  ): void {
+    CommandUtils.parseArgumentInput(argument).forEach(a => {
+      const arg = this.createArgument(a.argument, a.prefix);
+      if (arg) {
+        callback(arg);
+      }
+    });
+  }
 }
 
 class CommandArgument implements ICommandArgument {
-  public argumentBefore: string;
   public argument: string;
   public prefix?: string;
 
@@ -77,14 +153,23 @@ class CommandArgument implements ICommandArgument {
     argument: string,
     prefix?: string
   ) {
-    if (prefix) {
-      this.prefix = prefix;
+    let newArgument = argument;
+    if ((builderOptions.variablePattern as RegExp).test(argument)) {
+      try {
+        newArgument =
+          this.resolveDynamicVariable(builderOptions, argument) || '';
+      } catch (obj) {
+        if (builderOptions.warnUnresolvedVariables) {
+          LogUtils.warn(obj.toString());
+          // TODO: Log err.stack
+        }
+
+        if (builderOptions.skipUnresolvedVariables) return;
+      }
     }
-    this.argumentBefore = argument;
-    this.argument = this.evalDynamicVariable(
-      argument,
-      builderOptions.dynamicVariables
-    );
+
+    this.prefix = prefix ? prefix.trim() : undefined;
+    this.argument = newArgument ? newArgument.trim() : '';
   }
 
   public toString() {
@@ -92,24 +177,59 @@ class CommandArgument implements ICommandArgument {
     return `${prefix}${this.argument} `;
   }
 
-  private evalDynamicVariable(
-    argument: string,
-    dynamicVariables?: IDynamicVariables
-  ): string {
-    const dynVars = dynamicVariables || {};
-    let arg;
-    arg = argument.replace(/\$\{(.+)\}/gim, replaceFn);
+  private resolveDynamicVariable(
+    builderOptions: IBuilderOptions,
+    argument?: string
+  ): string | undefined | null {
+    if (!argument || !builderOptions.dynamicVariables) return;
 
-    function replaceFn(m: any, p1: any) {
-      if (!dynVars || !(dynVars[p1] instanceof Function)) {
-        return m;
+    const extractFn: Array<ICommandEvalValueInput<any, string>> = [
+      {
+        predicate: (val: () => string) => val instanceof Function,
+        replacer: (val: () => string) => val()
+      },
+      {
+        predicate: (val: string) => typeof val === 'string',
+        replacer: (val: string) => val
       }
+    ];
 
-      return dynVars[p1]();
+    const featuresActive = Object.keys(features)
+      .filter(x => builderOptions[x])
+      .map(x => features[x]);
+    const featurePredicate = new Predicate(featuresActive);
+
+    const dynVariables = builderOptions.dynamicVariables;
+    const dynPredicate = new Predicate(extractFn);
+    const dynVarPattern = builderOptions.variablePattern as RegExp;
+
+    let unresolved: VariableUnresolvableException | undefined;
+    const arg = argument.replace(
+      new RegExp(dynVarPattern, 'gim'),
+      (match: any, actualValue: any): string => {
+        let resolvedValue = actualValue;
+        resolvedValue = dynPredicate.first(dynVariables[actualValue]);
+        resolvedValue = featurePredicate.all(resolvedValue);
+
+        if (!resolvedValue) {
+          unresolved = new VariableUnresolvableException({
+            argument,
+            original: match,
+            variable: actualValue
+          });
+          return '';
+        }
+
+        return resolvedValue;
+      }
+    );
+
+    if (unresolved) {
+      throw unresolved;
     }
 
-    return arg || '';
+    return arg.trim();
   }
 }
 
-export default Command;
+export { Command, CommandArgument };
