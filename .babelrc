@@ -11,6 +11,7 @@
   "plugins": [
     ["@babel/transform-modules-commonjs", {
       "allowTopLevelThis": true
-    }]
+    }],
+    "@babel/proposal-class-properties"
   ]
 }

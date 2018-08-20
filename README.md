@@ -175,6 +175,10 @@ Just remember to run the following beforehand:
 
 ## Changelog
 
+### 1.1.1
+
+- Added support for class properties (Babel plugin)
+
 ### 1.1.0
 
 - Babel 7
