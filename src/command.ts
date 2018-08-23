@@ -42,7 +42,7 @@ class Command implements ICommand {
   }
 
   public exec(): ICommandProcess {
-    const cmd = exec(this.toString());
+    const cmd = exec(this.toString(), { shell: this.builderOptions.shell });
     const promise = new Promise<ICommandProcessOutput>((resolve, reject) => {
       const successFn = (code: number, signal: string) => {
         const output = { code, signal } as ICommandProcessOutput;

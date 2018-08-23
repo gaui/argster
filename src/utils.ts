@@ -17,6 +17,7 @@ class BuilderUtils {
       dynamicVariables: {},
       rootDir: process.cwd(),
       sentencesInQuotes: true,
+      shell: '/bin/bash',
       skipUnresolvedVariables: false,
       variablePattern: /\$\{(.+)\}/,
       warnUnresolvedVariables: true

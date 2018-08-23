@@ -47,4 +47,8 @@ export interface IBuilderOptions {
   // Pattern for matching variables
   // default: \$\{(.+)\}
   variablePattern?: RegExp;
+
+  // Shell to use for executing commands
+  // default: /bin/bash
+  shell?: string;
 }

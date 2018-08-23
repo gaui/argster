@@ -175,6 +175,10 @@ Just remember to run the following beforehand:
 
 ## Changelog
 
+### 1.1.2
+
+- Added option for specifying which shell to use for executing commands. Default is `/bin/bash`
+
 ### 1.1.1
 
 - Added support for class properties (Babel plugin)
