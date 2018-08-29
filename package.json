@@ -6,6 +6,10 @@
   "types": "./lib/index.d.ts",
   "author": "Gudjon Jonsson <gaui@gaui.is> (https://gaui.is)",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gaui/argster.git"
+  },
   "scripts": {
     "build": "yarn build:babel && yarn dts",
     "build:babel": "yarn babel src --out-dir lib --extensions .ts,.tsx --loose --verbose --delete-dir-on-start",
