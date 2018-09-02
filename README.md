@@ -175,6 +175,12 @@ Just remember to run the following beforehand:
 
 ## Changelog
 
+### 1.1.3
+
+- Upgraded to Babel 7 stable release
+- Updated dependencies
+- Added reference to git repo in package.json
+
 ### 1.1.2
 
 - Added option for specifying which shell to use for executing commands. Default is `/bin/bash`
