@@ -175,6 +175,12 @@ Just remember to run the following beforehand:
 
 ## Changelog
 
+### 1.1.4
+
+- Added possibility to specify stdout/stderr callbacks when executing a command (in `exec()` function)
+- Added stdout/stderr output when promise for process is resolved
+- Only use `close` event (instead of both `close` and `exit`) in ChildProcess to determine status of process
+
 ### 1.1.3
 
 - Upgraded to Babel 7 stable release

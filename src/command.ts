@@ -13,10 +13,6 @@ import { VariableUnresolvableException } from './exceptions';
 import features from './features';
 import { CommandUtils, FileUtils, LogUtils, Predicate } from './utils';
 
-/* tslint:disable:no-console */
-const stdoutLog = (str: string) => process.stdout.write(str);
-const stderrLog = (str: string) => process.stderr.write(str);
-
 class Command implements ICommand {
   public files: IArgumentFilePatterns[] = [];
   public command: string;
@@ -41,11 +37,22 @@ class Command implements ICommand {
     }
   }
 
-  public exec(): ICommandProcess {
+  public exec(
+    stdout?: (chunk: any) => void,
+    stderr?: (chunk: any) => void
+  ): ICommandProcess {
     const cmd = exec(this.toString(), { shell: this.builderOptions.shell });
+    const stdoutArray: any[] = [];
+    const stderrArray: any[] = [];
+
     const promise = new Promise<ICommandProcessOutput>((resolve, reject) => {
       const successFn = (code: number, signal: string) => {
-        const output = { code, signal } as ICommandProcessOutput;
+        const output = {
+          code,
+          signal,
+          stderr: stderrArray,
+          stdout: stdoutArray
+        } as ICommandProcessOutput;
 
         if (code === 0) {
           resolve(output);
@@ -54,13 +61,25 @@ class Command implements ICommand {
         }
       };
 
-      cmd.on('exit', successFn);
       cmd.on('close', successFn);
       cmd.on('error', (err: any) => reject(err));
     });
 
-    cmd.stdout.on('data', stdoutLog);
-    cmd.stderr.on('data', stderrLog);
+    cmd.stdout.on('data', chunk => {
+      if (stdout) {
+        stdout(chunk);
+      }
+
+      stdoutArray.push(chunk);
+    });
+
+    cmd.stderr.on('data', chunk => {
+      if (stderr) {
+        stderr(chunk);
+      }
+
+      stderrArray.push(chunk);
+    });
 
     const commandProcess: ICommandProcess = {
       command: this.toString(),

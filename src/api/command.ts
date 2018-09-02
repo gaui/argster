@@ -30,6 +30,8 @@ export interface ICommandProcess {
 export interface ICommandProcessOutput {
   code: number;
   signal: string;
+  stdout: any[];
+  stderr: any[];
 }
 
 export interface ICommandEvalValueInput<V, T> {
