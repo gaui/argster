@@ -173,18 +173,16 @@ class CommandArgument implements ICommandArgument {
     prefix?: string
   ) {
     let newArgument = argument;
-    if ((builderOptions.variablePattern as RegExp).test(argument)) {
-      try {
-        newArgument =
-          this.resolveDynamicVariable(builderOptions, argument) || '';
-      } catch (obj) {
-        if (builderOptions.warnUnresolvedVariables) {
-          LogUtils.warn(obj.toString());
-          // TODO: Log err.stack
-        }
-
-        if (builderOptions.skipUnresolvedVariables) return;
+    try {
+      newArgument =
+        this.resolveDynamicVariable(builderOptions, argument) || '';
+    } catch (obj) {
+      if (builderOptions.warnUnresolvedVariables) {
+        LogUtils.warn(obj.toString());
+        // TODO: Log err.stack
       }
+
+      if (builderOptions.skipUnresolvedVariables) return;
     }
 
     this.prefix = prefix ? prefix.trim() : undefined;
