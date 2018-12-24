@@ -14,7 +14,7 @@
     "url": "https://github.com/gaui/argster.git"
   },
   "scripts": {
-    "build": "yarn microbundle --target node",
+    "build": "yarn microbundle --target node --external child_process,events,assert,util",
     "dts": "yarn tsc --emitDeclarationOnly",
     "push": "yarn build && yarn publish",
     "lint": "tslint -p .",
