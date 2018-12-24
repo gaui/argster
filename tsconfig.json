@@ -11,6 +11,7 @@
     "rootDir": "src",
     "outDir": "lib",
     "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
