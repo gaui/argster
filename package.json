@@ -14,8 +14,7 @@
     "url": "https://github.com/gaui/argster.git"
   },
   "scripts": {
-    "build": "yarn build:babel && yarn dts",
-    "build:babel": "yarn babel src --out-dir lib --extensions .ts,.tsx --loose --verbose --delete-dir-on-start",
+    "build": "yarn microbundle --target node",
     "dts": "yarn tsc --emitDeclarationOnly",
     "push": "yarn build && yarn publish",
     "lint": "tslint -p .",
