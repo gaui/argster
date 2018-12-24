@@ -9,4 +9,4 @@ yarn-error.log*
 dist/
 lib/
 node_modules
-.cache
+*cache*
