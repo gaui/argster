@@ -2,8 +2,11 @@
   "name": "argster",
   "version": "1.1.4",
   "description": "Just a simple command/argument manager",
-  "main": "./lib/index.js",
-  "types": "./lib/index.d.ts",
+  "main": "lib/index.js",
+  "umd:main": "lib/index.umd.js",
+  "module": "lib/index.mjs",
+  "source": "src/index.ts",
+  "types": "lib/index.d.ts",
   "author": "Gudjon Jonsson <gaui@gaui.is> (https://gaui.is)",
   "license": "MIT",
   "repository": {
