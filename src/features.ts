@@ -1,8 +1,4 @@
-import { IBuilderOptions, ICommandEvalValueInput } from './api';
-
-type TFeature = {
-  [key in keyof IBuilderOptions]: ICommandEvalValueInput<any, any>
-};
+import { TFeature } from './api/features';
 
 const features: TFeature = {
   sentencesInQuotes: {
