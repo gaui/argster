@@ -8,31 +8,30 @@ import {
   ICommandArgument,
   ICommandEvalValueInput
 } from './api';
+import { IBuilderUtils } from './api/utils/builder';
+import { ICommandUtils } from './api/utils/command';
+import { IFileUtils } from './api/utils/file';
+import { IPredicate } from './api/utils/predicate';
 
 /* tslint:disable:max-classes-per-file */
 
-class BuilderUtils {
-  public static get defaultOptions(): IBuilderOptions {
-    return {
-      dynamicVariables: {},
-      rootDir: process.cwd(),
-      sentencesInQuotes: true,
-      shell: '/bin/bash',
-      skipUnresolvedVariables: false,
-      variablePattern: /\$\{(.+)\}/,
-      warnUnresolvedVariables: true
-    };
-  }
+class BuilderUtils implements IBuilderUtils {
+  public static readonly defaultOptions: IBuilderOptions = {
+    dynamicVariables: {},
+    rootDir: process.cwd(),
+    sentencesInQuotes: true,
+    shell: '/bin/bash',
+    skipUnresolvedVariables: false,
+    variablePattern: /\$\{(.+)\}/,
+    warnUnresolvedVariables: true
+  };
 
-  public static parseOptions(options?: IBuilderOptions): IBuilderOptions {
-    const opts = Object.assign(BuilderUtils.defaultOptions, options);
-
-    return opts;
-  }
+  public parseOptions = (options?: IBuilderOptions): IBuilderOptions =>
+    Object.assign(BuilderUtils.defaultOptions, options);
 }
 
-class FileUtils {
-  public static computeFiles(
+class FileUtils implements IFileUtils {
+  public computeFiles(
     argumentFilePatterns: IArgumentFilePatterns[],
     rootDir: string
   ): IArgumentFilePatterns[] {
@@ -47,7 +46,7 @@ class FileUtils {
     return argumentFilePatterns;
   }
 
-  public static computeFileContents(
+  public computeFileContents(
     argumentFilePatterns: IArgumentFilePatterns[]
   ): IArgumentFileContents[] {
     const newArray = [] as IArgumentFileContents[];
@@ -63,17 +62,14 @@ class FileUtils {
     return newArray;
   }
 
-  public static readFileAsArray(fileName: string): string[] {
+  public readFileAsArray(fileName: string): string[] {
     const content = fs.readFileSync(fileName, { encoding: 'utf8' });
     const contentArray = content.split('\n').filter(Boolean);
 
     return contentArray;
   }
 
-  public static searchFilesForPatterns(
-    patterns: string[],
-    rootDir: string
-  ): string[] {
+  public searchFilesForPatterns(patterns: string[], rootDir: string): string[] {
     const searchPattern = patterns.join('|');
     const globOptions = {
       cwd: rootDir,
@@ -91,10 +87,8 @@ class LogUtils {
   public static warn = console.warn;
 }
 
-class CommandUtils {
-  public static parseArgumentInput(
-    args: CommandArgumentInput
-  ): ICommandArgument[] {
+class CommandUtils implements ICommandUtils {
+  public parseArgumentInput(args: CommandArgumentInput): ICommandArgument[] {
     const argArray: ICommandArgument[] | any = (Array.isArray(args)
       ? args
       : [args]
@@ -119,7 +113,7 @@ class CommandUtils {
   }
 }
 
-class Predicate {
+class Predicate implements IPredicate {
   private predicates: Array<ICommandEvalValueInput<any, any>>;
   constructor(
     predicates?:

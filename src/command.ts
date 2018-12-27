@@ -9,11 +9,17 @@ import {
   ICommandProcess,
   ICommandProcessOutput
 } from './api';
+import { ICommandUtils } from './api/utils/command';
+import { IFileUtils } from './api/utils/file';
+import { IPredicate } from './api/utils/predicate';
 import { VariableUnresolvableException } from './exceptions';
 import features from './features';
 import { CommandUtils, FileUtils, LogUtils, Predicate } from './utils';
 
 class Command implements ICommand {
+  public fileUtils: IFileUtils = new FileUtils();
+  public commandUtils: ICommandUtils = new CommandUtils();
+
   public files: IArgumentFilePatterns[] = [];
   public command: string;
   public arguments: ICommandArgument[] = [];
@@ -28,11 +34,11 @@ class Command implements ICommand {
     this.builderOptions = builderOptions;
 
     if (filePatterns) {
-      this.files = FileUtils.computeFiles(
+      this.files = this.fileUtils.computeFiles(
         filePatterns,
         builderOptions.rootDir as string
       );
-      const contents = FileUtils.computeFileContents(this.files);
+      const contents = this.fileUtils.computeFileContents(this.files);
       this.arguments = this.computeArguments(contents);
     }
   }
@@ -154,7 +160,7 @@ class Command implements ICommand {
     argument: ICommandArgument,
     callback: (arg: ICommandArgument) => void
   ): void {
-    CommandUtils.parseArgumentInput(argument).forEach(a => {
+    this.commandUtils.parseArgumentInput(argument).forEach(a => {
       const arg = this.createArgument(a.argument, a.prefix);
       if (arg) {
         callback(arg);
@@ -174,8 +180,7 @@ class CommandArgument implements ICommandArgument {
   ) {
     let newArgument = argument;
     try {
-      newArgument =
-        this.resolveDynamicVariable(builderOptions, argument) || '';
+      newArgument = this.resolveDynamicVariable(builderOptions, argument) || '';
     } catch (obj) {
       if (builderOptions.warnUnresolvedVariables) {
         LogUtils.warn(obj.toString());
@@ -214,15 +219,15 @@ class CommandArgument implements ICommandArgument {
     const featuresActive = Object.keys(features)
       .filter(x => builderOptions[x])
       .map(x => features[x]);
-    const featurePredicate = new Predicate(featuresActive);
+    const featurePredicate: IPredicate = new Predicate(featuresActive);
 
     const dynVariables = builderOptions.dynamicVariables;
-    const dynPredicate = new Predicate(extractFn);
-    const dynVarPattern = builderOptions.variablePattern as RegExp;
+    const dynPredicate: IPredicate = new Predicate(extractFn);
+    const dynVarPattern = builderOptions.variablePattern;
 
     let unresolved: VariableUnresolvableException | undefined;
     const arg = argument.replace(
-      new RegExp(dynVarPattern, 'gim'),
+      new RegExp(dynVarPattern!, 'gim'),
       (match: any, actualValue: any): string => {
         let resolvedValue = actualValue;
         resolvedValue = dynPredicate.first(dynVariables[actualValue]);
