@@ -1,4 +1,5 @@
 import { ICommand } from './command';
+import { IAvailableFeatures } from './features';
 import { IArgumentFilePatterns, IDynamicVariables } from './misc';
 
 /* tslint:disable:no-empty-interface */
@@ -40,10 +41,6 @@ export interface IBuilderOptions {
   // default: true
   warnUnresolvedVariables?: boolean;
 
-  // Automatically put single quotes around sentences
-  // default: true
-  sentencesInQuotes?: boolean;
-
   // Pattern for matching variables
   // default: \$\{(.+)\}
   variablePattern?: RegExp;
@@ -51,4 +48,7 @@ export interface IBuilderOptions {
   // Shell to use for executing commands
   // default: /bin/bash
   shell?: string;
+
+  // Features to run on each argument
+  features?: IAvailableFeatures;
 }

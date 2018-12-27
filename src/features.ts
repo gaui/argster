@@ -1,6 +1,6 @@
-import { TFeature } from './api/features';
+import { TFeatureEvaluator } from './api/features';
 
-const features: TFeature = {
+const features: TFeatureEvaluator = {
   sentencesInQuotes: {
     predicate: (val: string): boolean => {
       return Boolean(val) && val.split(' ').length > 1;

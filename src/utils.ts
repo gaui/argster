@@ -18,8 +18,10 @@ import { IPredicate } from './api/utils/predicate';
 class BuilderUtils implements IBuilderUtils {
   public static readonly defaultOptions: IBuilderOptions = {
     dynamicVariables: {},
+    features: {
+      sentencesInQuotes: true
+    },
     rootDir: process.cwd(),
-    sentencesInQuotes: true,
     shell: '/bin/bash',
     skipUnresolvedVariables: false,
     variablePattern: /\$\{(.+)\}/,
