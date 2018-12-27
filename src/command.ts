@@ -180,7 +180,7 @@ class CommandArgument implements ICommandArgument {
   ) {
     let newArgument = argument;
     try {
-      newArgument = this.resolveDynamicVariable(builderOptions, argument) || '';
+      newArgument = this.resolve(builderOptions, argument) || '';
     } catch (obj) {
       if (builderOptions.warnUnresolvedVariables) {
         LogUtils.warn(obj.toString());
@@ -199,11 +199,11 @@ class CommandArgument implements ICommandArgument {
     return `${prefix}${this.argument} `;
   }
 
-  private resolveDynamicVariable(
+  private resolve(
     builderOptions: IBuilderOptions,
     argument?: string
   ): string | undefined | null {
-    if (!argument || !builderOptions.dynamicVariables) return;
+    if (!argument) return;
 
     const extractFn: Array<ICommandEvalValueInput<any, string>> = [
       {
@@ -216,14 +216,14 @@ class CommandArgument implements ICommandArgument {
       }
     ];
 
+    const dynVariables = builderOptions.dynamicVariables || {};
+    const dynPredicate: IPredicate = new Predicate(extractFn);
+    const dynVarPattern = builderOptions.variablePattern;
+
     const featuresActive = Object.keys(features)
       .filter(x => builderOptions[x])
       .map(x => features[x]);
     const featurePredicate: IPredicate = new Predicate(featuresActive);
-
-    const dynVariables = builderOptions.dynamicVariables;
-    const dynPredicate: IPredicate = new Predicate(extractFn);
-    const dynVarPattern = builderOptions.variablePattern;
 
     let unresolved: VariableUnresolvableException | undefined;
     const arg = argument.replace(
