@@ -1,6 +1,5 @@
 import { ICommand } from './command';
-import { IAvailableFeatures } from './features';
-import { IArgumentFilePatterns, IDynamicVariables } from './misc';
+import { IArgumentFilePatterns, IBuilderOptions } from './options';
 
 /* tslint:disable:no-empty-interface */
 
@@ -22,33 +21,4 @@ export interface IBuilder {
    * @returns Array of command objects
    */
   getAllCommands(): ICommand[];
-}
-
-export interface IBuilderOptions {
-  // Root dir to resolve all paths from
-  // default: process.cwd()
-  rootDir?: string;
-
-  // Key-Value map containing the name of the variable
-  // and its value (function/lambda)
-  dynamicVariables?: IDynamicVariables;
-
-  // Skip command arguments where variables have "no value" *
-  // default: false
-  skipUnresolvedVariables?: boolean;
-
-  // Warn on command arguments where variables have "no value" *
-  // default: true
-  warnUnresolvedVariables?: boolean;
-
-  // Pattern for matching variables
-  // default: \$\{(.+)\}
-  variablePattern?: RegExp;
-
-  // Shell to use for executing commands
-  // default: /bin/bash
-  shell?: string;
-
-  // Features to run on each argument
-  features?: IAvailableFeatures;
 }

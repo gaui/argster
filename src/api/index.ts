@@ -1,4 +1,4 @@
-import { IBuilder, IBuilderOptions } from './builder';
+import { IBuilder } from './builder';
 import {
   CommandArgumentInput,
   ICommand,
@@ -7,11 +7,12 @@ import {
   ICommandProcess,
   ICommandProcessOutput
 } from './command';
+import { IArgumentFileContents } from './misc';
 import {
-  IArgumentFileContents,
   IArgumentFilePatterns,
+  IBuilderOptions,
   IDynamicVariables
-} from './misc';
+} from './options';
 
 export {
   IBuilder,

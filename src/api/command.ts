@@ -1,4 +1,4 @@
-import { IArgumentFilePatterns } from './misc';
+import { IArgumentFilePatterns } from './options';
 
 /* tslint:disable:no-empty-interface */
 

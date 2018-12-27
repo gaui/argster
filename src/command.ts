@@ -13,7 +13,7 @@ import { ICommandUtils } from './api/utils/command';
 import { IFileUtils } from './api/utils/file';
 import { IPredicate } from './api/utils/predicate';
 import { VariableUnresolvableException } from './exceptions';
-import features from './features';
+import features from './options';
 import { CommandUtils, FileUtils, LogUtils, Predicate } from './utils';
 
 class Command implements ICommand {
@@ -180,7 +180,7 @@ class CommandArgument implements ICommandArgument {
   ) {
     let newArgument = argument;
     try {
-      newArgument = this.resolve(builderOptions, argument) || '';
+      newArgument = this.reducer(builderOptions, newArgument);
     } catch (obj) {
       if (builderOptions.warnUnresolvedVariables) {
         LogUtils.warn(obj.toString());
@@ -199,11 +199,38 @@ class CommandArgument implements ICommandArgument {
     return `${prefix}${this.argument} `;
   }
 
-  private resolve(
+  private reducer(builderOptions: IBuilderOptions, argument: string): string {
+    const fns = [this.resolveDynamicVariable, this.applyFeatures];
+    const newArgument = fns.reduce(
+      (acc, fn) => fn(builderOptions, acc) || '',
+      argument
+    );
+
+    return newArgument;
+  }
+
+  private applyFeatures(builderOptions: IBuilderOptions, argument?: string) {
+    const featuresActive = Object.keys(features)
+      .filter(x => builderOptions[x])
+      .map(
+        x =>
+          ({
+            predicate: features[x].predicate,
+            replacer: features[x].replacer
+          } as ICommandEvalValueInput<string, string>)
+      );
+
+    const featurePredicate: IPredicate = new Predicate(featuresActive);
+    const resolvedValue = featurePredicate.all(argument);
+
+    return resolvedValue;
+  }
+
+  private resolveDynamicVariable(
     builderOptions: IBuilderOptions,
     argument?: string
   ): string | undefined | null {
-    if (!argument) return;
+    if (!argument || !builderOptions.dynamicVariables) return;
 
     const extractFn: Array<ICommandEvalValueInput<any, string>> = [
       {
@@ -216,22 +243,15 @@ class CommandArgument implements ICommandArgument {
       }
     ];
 
-    const dynVariables = builderOptions.dynamicVariables || {};
+    const dynVariables = builderOptions.dynamicVariables;
     const dynPredicate: IPredicate = new Predicate(extractFn);
     const dynVarPattern = builderOptions.variablePattern;
-
-    const featuresActive = Object.keys(features)
-      .filter(x => builderOptions[x])
-      .map(x => features[x]);
-    const featurePredicate: IPredicate = new Predicate(featuresActive);
 
     let unresolved: VariableUnresolvableException | undefined;
     const arg = argument.replace(
       new RegExp(dynVarPattern!, 'gim'),
       (match: any, actualValue: any): string => {
-        let resolvedValue = actualValue;
-        resolvedValue = dynPredicate.first(dynVariables[actualValue]);
-        resolvedValue = featurePredicate.all(resolvedValue);
+        const resolvedValue = dynPredicate.first(dynVariables[actualValue]);
 
         if (!resolvedValue) {
           unresolved = new VariableUnresolvableException({

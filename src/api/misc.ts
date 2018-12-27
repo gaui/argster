@@ -1,15 +1,8 @@
-/* tslint:disable:no-empty-interface */
+import { IArgumentFilePatterns } from '.';
 
-export interface IArgumentFilePatterns {
-  prefix: string;
-  patterns: string[];
-}
+/* tslint:disable:no-empty-interface */
 
 export interface IArgumentFileContents {
   files: IArgumentFilePatterns;
   contents: string[];
-}
-
-export interface IDynamicVariables {
-  [key: string]: () => any;
 }

@@ -12,24 +12,13 @@ import { IBuilderUtils } from './api/utils/builder';
 import { ICommandUtils } from './api/utils/command';
 import { IFileUtils } from './api/utils/file';
 import { IPredicate } from './api/utils/predicate';
+import { defaultOptions } from './options';
 
 /* tslint:disable:max-classes-per-file */
 
 class BuilderUtils implements IBuilderUtils {
-  public static readonly defaultOptions: IBuilderOptions = {
-    dynamicVariables: {},
-    features: {
-      sentencesInQuotes: true
-    },
-    rootDir: process.cwd(),
-    shell: '/bin/bash',
-    skipUnresolvedVariables: false,
-    variablePattern: /\$\{(.+)\}/,
-    warnUnresolvedVariables: true
-  };
-
   public parseOptions = (options?: IBuilderOptions): IBuilderOptions =>
-    Object.assign(BuilderUtils.defaultOptions, options);
+    Object.assign(defaultOptions, options);
 }
 
 class FileUtils implements IFileUtils {
