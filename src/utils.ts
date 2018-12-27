@@ -118,7 +118,7 @@ class CommandUtils implements ICommandUtils {
 class Predicate implements IPredicate {
   private predicates: Array<ICommandEvalValueInput<any, any>>;
   constructor(
-    predicates?:
+    predicates:
       | Array<ICommandEvalValueInput<any, any>>
       | ICommandEvalValueInput<any, any>
   ) {
