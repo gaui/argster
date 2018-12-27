@@ -1,54 +1,24 @@
 import * as path from 'path';
-import { Builder, IArgumentFilePatterns, IBuilder, IBuilderOptions } from '../../src';
-import { Command } from '../../src/command';
-import MockBuilder from '../__mocks__/Builder';
+import { Builder, IBuilder, IBuilderOptions } from '../src';
 
 const rootDir = path.join(__dirname, 'data');
 
-const extensions: IArgumentFilePatterns[] = [
-  {
-    patterns: ['**/*.env'],
-    prefix: '--env'
-  },
-  {
-    patterns: ['**/*.vol'],
-    prefix: '-v'
-  }
-];
-
-const createBuilder = (options? : IBuilderOptions) =>
-  new Builder(Object.assign({}, { rootDir }, options));
+const createBuilder = (options?: IBuilderOptions) => {
+  const builder = new Builder(Object.assign({}, { rootDir }, options));
+  return builder;
+  // builder.utils = set mockable version of BuilderUtils
+  // const builder = jest.fn<IBuilder>(() => ({
+  //   createCommand: jest.fn<ICommand>(() => ({
+  //     exec: jest.fn()
+  //   }))
+  // }));
+};
 
 describe('creating commands', () => {
   let builder: IBuilder;
 
   beforeEach(() => {
     builder = createBuilder();
-  });
-
-  test('it should create and execute command', () => {
-    const mBuilder = new MockBuilder();
-    const cmd = mBuilder.createCommand('test', extensions);
-    cmd.exec();
-
-    expect(mBuilder.createCommand).toHaveBeenCalledTimes(1);
-    expect(cmd.exec).toHaveBeenCalledTimes(1);
-  });
-
-  test('it should return a command object', () => {
-    const cmd = builder.createCommand('test', extensions);
-
-    expect(cmd).toBeInstanceOf(Command);
-  });
-
-  test('it should return correct amount of commands', () => {
-    const count = 3;
-    [...Array(count)].forEach(i => {
-      builder.createCommand('test', extensions);
-    });
-    const cmds = builder.getAllCommands();
-
-    expect(cmds.length).toBe(count);
   });
 
   test('it should return a single command', () => {
@@ -108,8 +78,8 @@ describe('creating commands', () => {
   });
 
   test('it should return a long command with quotes', () => {
-    const customBuilder = createBuilder({ sentencesInQuotes: true });
-    const cmd = customBuilder.createCommand('test');
+    const custobuilder = createBuilder({ sentencesInQuotes: true });
+    const cmd = custobuilder.createCommand('test');
     cmd.appendArgument('foo bar baz');
 
     expect(cmd.toString()).toBe('test "foo bar baz"');
