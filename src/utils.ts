@@ -20,7 +20,7 @@ import { defaultOptions } from './options';
 
 class BuilderUtils implements IBuilderUtils {
   public parseOptions = (options?: IBuilderOptions): IBuilderOptions =>
-    Object.assign(defaultOptions, options);
+    Object.assign({}, defaultOptions, options);
 }
 
 class FileUtils implements IFileUtils {
