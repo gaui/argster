@@ -9,37 +9,36 @@ import {
   ICommandProcess,
   ICommandProcessOutput
 } from './api';
-import { ICommandUtils } from './api/utils/command';
-import { IFileUtils } from './api/utils/file';
-import { ILogUtils } from './api/utils/log';
+import { IUtils } from './api/utils';
 import { IPredicate } from './api/utils/predicate';
 import { VariableUnresolvableException } from './exceptions';
 import features from './options';
-import { CommandUtils, FileUtils, LogUtils, Predicate } from './utils';
+import { Predicate, utilFactory } from './utils';
 
 class Command implements ICommand {
-  public fileUtils: IFileUtils = new FileUtils();
-  public commandUtils: ICommandUtils = new CommandUtils();
-
   public files: IArgumentFilePatterns[] = [];
   public command: string;
   public arguments: ICommandArgument[] = [];
   private builderOptions: IBuilderOptions;
 
+  private utils: IUtils;
+
   constructor(
     builderOptions: IBuilderOptions,
     command: string,
-    filePatterns?: IArgumentFilePatterns[]
+    filePatterns?: IArgumentFilePatterns[],
+    utils?: IUtils
   ) {
+    this.utils = utils || utilFactory();
     this.command = command;
     this.builderOptions = builderOptions;
 
     if (filePatterns) {
-      this.files = this.fileUtils.computeFiles(
+      this.files = this.utils.file.computeFiles(
         filePatterns,
         builderOptions.rootDir as string
       );
-      const contents = this.fileUtils.computeFileContents(this.files);
+      const contents = this.utils.file.computeFileContents(this.files);
       this.arguments = this.computeArguments(contents);
     }
   }
@@ -133,7 +132,12 @@ class Command implements ICommand {
     argument: string,
     prefix?: string
   ): ICommandArgument | null {
-    const newObj = new CommandArgument(this.builderOptions, argument, prefix);
+    const newObj = new CommandArgument(
+      this.builderOptions,
+      argument,
+      prefix,
+      this.utils
+    );
 
     if (Object.keys(newObj).length) return newObj;
 
@@ -161,7 +165,7 @@ class Command implements ICommand {
     argument: ICommandArgument,
     callback: (arg: ICommandArgument) => void
   ): void {
-    this.commandUtils.parseArgumentInput(argument).forEach(a => {
+    this.utils.command.parseArgumentInput(argument).forEach(a => {
       const arg = this.createArgument(a.argument, a.prefix);
       if (arg) {
         callback(arg);
@@ -171,16 +175,18 @@ class Command implements ICommand {
 }
 
 class CommandArgument implements ICommandArgument {
-  public logUtils: ILogUtils = new LogUtils();
-
   public argument: string;
   public prefix?: string;
+
+  private utils: IUtils;
 
   constructor(
     builderOptions: IBuilderOptions,
     argument: string,
-    prefix?: string
+    prefix?: string,
+    utils?: IUtils
   ) {
+    this.utils = utils || utilFactory();
     const newArgument = this.reducer(builderOptions, argument);
 
     this.prefix = prefix ? prefix.trim() : undefined;
@@ -252,7 +258,7 @@ class CommandArgument implements ICommandArgument {
 
         if (!resolvedValue) {
           if (builderOptions.warnUnresolvedVariables) {
-            this.logUtils.warn(
+            this.utils.log.warn(
               new VariableUnresolvableException({
                 argument,
                 original: match,

@@ -8,6 +8,7 @@ import {
   ICommandArgument,
   ICommandEvalValueInput
 } from './api';
+import { IUtils } from './api/utils';
 import { IBuilderUtils } from './api/utils/builder';
 import { ICommandUtils } from './api/utils/command';
 import { IFileUtils } from './api/utils/file';
@@ -15,7 +16,7 @@ import { ILogUtils } from './api/utils/log';
 import { IPredicate } from './api/utils/predicate';
 import { defaultOptions } from './options';
 
-/* tslint:disable:max-classes-per-file */
+/* tslint:disable:max-classes-per-file variable-name */
 
 class BuilderUtils implements IBuilderUtils {
   public parseOptions = (options?: IBuilderOptions): IBuilderOptions =>
@@ -23,6 +24,14 @@ class BuilderUtils implements IBuilderUtils {
 }
 
 class FileUtils implements IFileUtils {
+  private __fs: any;
+  private __glob: any;
+
+  constructor(__fs?: any, __glob?: any) {
+    this.__fs = __fs || fs;
+    this.__glob = __glob || glob;
+  }
+
   public computeFiles(
     argumentFilePatterns: IArgumentFilePatterns[],
     rootDir: string
@@ -55,7 +64,7 @@ class FileUtils implements IFileUtils {
   }
 
   public readFileAsArray(fileName: string): string[] {
-    const content = fs.readFileSync(fileName, { encoding: 'utf8' });
+    const content = this.__fs.readFileSync(fileName, { encoding: 'utf8' });
     const contentArray = content.split('\n').filter(Boolean);
 
     return contentArray;
@@ -70,7 +79,7 @@ class FileUtils implements IFileUtils {
       root: rootDir
     };
 
-    return glob.sync(searchPattern, globOptions);
+    return this.__glob.sync(searchPattern, globOptions);
   }
 }
 
@@ -146,4 +155,23 @@ class Predicate implements IPredicate {
   }
 }
 
-export { BuilderUtils, CommandUtils, FileUtils, LogUtils, Predicate };
+const utilFactory = (
+  builder?: IBuilderUtils,
+  command?: ICommandUtils,
+  file?: IFileUtils,
+  log?: ILogUtils
+): IUtils => ({
+  builder: builder || new BuilderUtils(),
+  command: command || new CommandUtils(),
+  file: file || new FileUtils(),
+  log: log || new LogUtils()
+});
+
+export {
+  utilFactory,
+  BuilderUtils,
+  CommandUtils,
+  FileUtils,
+  LogUtils,
+  Predicate
+};
