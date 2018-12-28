@@ -178,17 +178,7 @@ class CommandArgument implements ICommandArgument {
     argument: string,
     prefix?: string
   ) {
-    let newArgument = argument;
-    try {
-      newArgument = this.reducer(builderOptions, newArgument);
-    } catch (obj) {
-      if (builderOptions.warnUnresolvedVariables) {
-        LogUtils.warn(obj.toString());
-        // TODO: Log err.stack
-      }
-
-      if (builderOptions.skipUnresolvedVariables) return;
-    }
+    const newArgument = this.reducer(builderOptions, argument);
 
     this.prefix = prefix ? prefix.trim() : undefined;
     this.argument = newArgument ? newArgument.trim() : '';
@@ -209,9 +199,14 @@ class CommandArgument implements ICommandArgument {
     return newArgument;
   }
 
-  private applyFeatures(builderOptions: IBuilderOptions, argument?: string) {
+  private applyFeatures(
+    builderOptions: IBuilderOptions,
+    argument?: string
+  ): string | undefined {
+    if (!builderOptions.features) return;
+
     const featuresActive = Object.keys(features)
-      .filter(x => builderOptions[x])
+      .filter(x => builderOptions.features![x])
       .map(
         x =>
           ({
@@ -247,28 +242,30 @@ class CommandArgument implements ICommandArgument {
     const dynPredicate: IPredicate = new Predicate(extractFn);
     const dynVarPattern = builderOptions.variablePattern;
 
-    let unresolved: VariableUnresolvableException | undefined;
     const arg = argument.replace(
       new RegExp(dynVarPattern!, 'gim'),
       (match: any, actualValue: any): string => {
         const resolvedValue = dynPredicate.first(dynVariables[actualValue]);
 
         if (!resolvedValue) {
-          unresolved = new VariableUnresolvableException({
-            argument,
-            original: match,
-            variable: actualValue
-          });
-          return '';
+          if (builderOptions.warnUnresolvedVariables) {
+            LogUtils.warn(
+              new VariableUnresolvableException({
+                argument,
+                original: match,
+                variable: actualValue
+              })
+            );
+
+            // TODO: Log err.stack
+          }
+
+          if (builderOptions.skipUnresolvedVariables) return '';
         }
 
         return resolvedValue;
       }
     );
-
-    if (unresolved) {
-      throw unresolved;
-    }
 
     return arg.trim();
   }
