@@ -4,8 +4,8 @@ import {
   IArgumentFilePatterns,
   IBuilder,
   IBuilderOptions
-} from '../src';
-import { Command } from '../src/command';
+} from '../../src';
+import { Command } from '../../src/command';
 
 const rootDir = path.join(__dirname, 'data');
 
