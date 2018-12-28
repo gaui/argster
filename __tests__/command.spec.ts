@@ -1,22 +1,19 @@
-import * as path from 'path';
 import { Builder, IBuilder, IBuilderOptions } from '../src';
+import { FileUtils, utilFactory } from '../src/utils';
 
-const rootDir = path.join(__dirname, 'data');
+let builder: IBuilder;
 
 const createBuilder = (options?: IBuilderOptions) => {
-  const builder = new Builder(Object.assign({}, { rootDir }, options));
-  return builder;
-  // builder.utils = set mockable version of BuilderUtils
-  // const builder = jest.fn<IBuilder>(() => ({
-  //   createCommand: jest.fn<ICommand>(() => ({
-  //     exec: jest.fn()
-  //   }))
-  // }));
+  const mockFs = {
+    readFileSync: () => 'FOOOOOOOOOOOOOOOOOOOOO'
+  };
+  const utils = utilFactory();
+  utils.file = new FileUtils(mockFs, null);
+  const newBuilder = new Builder(options, utils);
+  return newBuilder;
 };
 
 describe('creating commands', () => {
-  let builder: IBuilder;
-
   beforeEach(() => {
     builder = createBuilder();
   });
@@ -62,26 +59,24 @@ describe('creating commands', () => {
       'foo prepend3 prepend2 prepend1 append3 append1 append2'
     );
   });
+});
 
-  test('it should return a long command without quotes', () => {
-    const cmd = builder.createCommand('test');
-    cmd.appendArgument('foo bar baz');
-
-    expect(cmd.toString()).toBe('test foo bar baz');
-  });
-
-  test('it should return a long command without quotes', () => {
-    const cmd = builder.createCommand('test');
-    cmd.appendArgument('foo bar baz');
-
-    expect(cmd.toString()).toBe('test foo bar baz');
-  });
-
+describe('creating commands with features enabled', () => {
   test('it should return a long command with quotes', () => {
-    const custobuilder = createBuilder({ sentencesInQuotes: true });
-    const cmd = custobuilder.createCommand('test');
+    builder = createBuilder({ features: { sentencesInQuotes: true } });
+    const cmd = builder.createCommand('test');
     cmd.appendArgument('foo bar baz');
 
     expect(cmd.toString()).toBe('test "foo bar baz"');
+  });
+});
+
+describe('creating commands with features disabled', () => {
+  test('it should return a long command without sentences in quotes', () => {
+    builder = createBuilder({ features: { sentencesInQuotes: false } });
+    const cmd = builder.createCommand('test');
+    cmd.appendArgument('foo bar baz');
+
+    expect(cmd.toString()).toBe('test foo bar baz');
   });
 });

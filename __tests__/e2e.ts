@@ -20,8 +20,10 @@ const extensions: IArgumentFilePatterns[] = [
   }
 ];
 
-const createBuilder = (options?: IBuilderOptions) =>
-  new Builder(Object.assign({}, { rootDir }, options));
+const createBuilder = (options?: IBuilderOptions) => {
+  const newBuilder = new Builder(Object.assign({}, options, { rootDir }));
+  return newBuilder;
+};
 
 describe('creating commands', () => {
   let builder: IBuilder;
