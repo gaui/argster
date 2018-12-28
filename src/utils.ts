@@ -11,6 +11,7 @@ import {
 import { IBuilderUtils } from './api/utils/builder';
 import { ICommandUtils } from './api/utils/command';
 import { IFileUtils } from './api/utils/file';
+import { ILogUtils } from './api/utils/log';
 import { IPredicate } from './api/utils/predicate';
 import { defaultOptions } from './options';
 
@@ -73,9 +74,9 @@ class FileUtils implements IFileUtils {
   }
 }
 
-class LogUtils {
+class LogUtils implements ILogUtils {
   // tslint:disable-next-line:no-console
-  public static warn = console.warn;
+  public warn = console.warn;
 }
 
 class CommandUtils implements ICommandUtils {

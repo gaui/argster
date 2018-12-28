@@ -11,6 +11,7 @@ import {
 } from './api';
 import { ICommandUtils } from './api/utils/command';
 import { IFileUtils } from './api/utils/file';
+import { ILogUtils } from './api/utils/log';
 import { IPredicate } from './api/utils/predicate';
 import { VariableUnresolvableException } from './exceptions';
 import features from './options';
@@ -170,6 +171,8 @@ class Command implements ICommand {
 }
 
 class CommandArgument implements ICommandArgument {
+  public logUtils: ILogUtils = new LogUtils();
+
   public argument: string;
   public prefix?: string;
 
@@ -249,7 +252,7 @@ class CommandArgument implements ICommandArgument {
 
         if (!resolvedValue) {
           if (builderOptions.warnUnresolvedVariables) {
-            LogUtils.warn(
+            this.logUtils.warn(
               new VariableUnresolvableException({
                 argument,
                 original: match,
