@@ -273,7 +273,7 @@ class CommandArgument implements ICommandArgument {
         if (builderOptions.throwUnresolvedVariables) throw unresolved;
       }
 
-      return resolvedValue;
+      return resolvedValue || '';
     };
 
     try {
@@ -287,8 +287,6 @@ class CommandArgument implements ICommandArgument {
       // TODO: Logging
       throw e;
     }
-
-    return;
   }
 }
 
