@@ -200,7 +200,10 @@ class CommandArgument implements ICommandArgument {
   }
 
   private reducer(builderOptions: IBuilderOptions, argument: string): string {
-    const fns = [this.resolveDynamicVariable, this.applyFeatures];
+    const fns = [
+      this.resolveDynamicVariable.bind(this),
+      this.applyFeatures.bind(this)
+    ];
     const newArgument = fns.reduce(
       (acc, fn) => fn(builderOptions, acc) || '',
       argument
