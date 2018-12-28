@@ -237,7 +237,7 @@ class CommandArgument implements ICommandArgument {
   private resolveDynamicVariable(
     builderOptions: IBuilderOptions,
     argument?: string
-  ): string | undefined | null {
+  ): string | undefined {
     if (!argument || !builderOptions.dynamicVariables) return;
 
     const extractFn: Array<ICommandEvalValueInput<any, string>> = [
@@ -255,32 +255,40 @@ class CommandArgument implements ICommandArgument {
     const dynPredicate: IPredicate = new Predicate(extractFn);
     const dynVarPattern = builderOptions.variablePattern;
 
-    const arg = argument.replace(
-      new RegExp(dynVarPattern!, 'gim'),
-      (match: any, actualValue: any): string => {
-        const resolvedValue = dynPredicate.first(dynVariables[actualValue]);
+    const replacerFn = (match: any, actualValue: any): string => {
+      const resolvedValue = dynPredicate.first(dynVariables[actualValue]);
+      if (!resolvedValue) {
+        const unresolved = new VariableUnresolvableException({
+          argument,
+          original: match,
+          variable: actualValue
+        });
 
-        if (!resolvedValue) {
-          if (builderOptions.warnUnresolvedVariables) {
-            this.utils.log.warn(
-              new VariableUnresolvableException({
-                argument,
-                original: match,
-                variable: actualValue
-              })
-            );
-
-            // TODO: Log err.stack
-          }
-
-          if (builderOptions.skipUnresolvedVariables) return '';
+        if (builderOptions.warnUnresolvedVariables) {
+          this.utils.log.warn(unresolved.toString());
         }
 
-        return resolvedValue;
-      }
-    );
+        if (builderOptions.skipUnresolvedVariables) return '';
 
-    return arg.trim();
+        if (builderOptions.throwUnresolvedVariables) throw unresolved;
+      }
+
+      return resolvedValue;
+    };
+
+    try {
+      const arg = argument.replace(
+        new RegExp(dynVarPattern!, 'gim'),
+        replacerFn
+      );
+
+      return arg.trim();
+    } catch (e) {
+      // TODO: Logging
+      throw e;
+    }
+
+    return;
   }
 }
 
