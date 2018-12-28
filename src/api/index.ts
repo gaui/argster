@@ -1,11 +1,11 @@
 import { IBuilder } from './builder';
 import {
-  CommandArgumentInput,
   ICommand,
   ICommandArgument,
   ICommandEvalValueInput,
   ICommandProcess,
-  ICommandProcessOutput
+  ICommandProcessOutput,
+  TCommandArgumentInput
 } from './command';
 import { IArgumentFileContents } from './misc';
 import {
@@ -16,7 +16,7 @@ import {
 
 export {
   IBuilder,
-  CommandArgumentInput,
+  TCommandArgumentInput,
   ICommand,
   ICommandArgument,
   ICommandEvalValueInput,

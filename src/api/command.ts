@@ -7,8 +7,8 @@ export interface ICommand {
     stdout?: (chunk: any) => any,
     stderr?: (chunk: any) => any
   ): ICommandProcess;
-  prependArgument(argument: CommandArgumentInput): void;
-  appendArgument(argument: CommandArgumentInput): void;
+  prependArgument(argument: TCommandArgumentInput): void;
+  appendArgument(argument: TCommandArgumentInput): void;
   toString(): string;
   toArray(): ReadonlyArray<string>;
 }
@@ -39,7 +39,7 @@ export interface ICommandEvalValueInput<V, T> {
   replacer: (val: V, injectedData?: any) => T;
 }
 
-export type CommandArgumentInput =
+export type TCommandArgumentInput =
   | ICommandArgument
   | ICommandArgument[]
   | string

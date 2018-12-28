@@ -1,5 +1,5 @@
-import { CommandArgumentInput, ICommandArgument } from '..';
+import { ICommandArgument, TCommandArgumentInput } from '..';
 
 export interface ICommandUtils {
-  parseArgumentInput(args: CommandArgumentInput): ICommandArgument[];
+  parseArgumentInput(args: TCommandArgumentInput): ICommandArgument[];
 }

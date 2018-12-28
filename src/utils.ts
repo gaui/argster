@@ -1,12 +1,12 @@
 import * as fs from 'fs';
 import * as glob from 'glob';
 import {
-  CommandArgumentInput,
   IArgumentFileContents,
   IArgumentFilePatterns,
   IBuilderOptions,
   ICommandArgument,
-  ICommandEvalValueInput
+  ICommandEvalValueInput,
+  TCommandArgumentInput
 } from './api';
 import { IUtils } from './api/utils';
 import { IBuilderUtils } from './api/utils/builder';
@@ -89,7 +89,7 @@ class LogUtils implements ILogUtils {
 }
 
 class CommandUtils implements ICommandUtils {
-  public parseArgumentInput(args: CommandArgumentInput): ICommandArgument[] {
+  public parseArgumentInput(args: TCommandArgumentInput): ICommandArgument[] {
     const argArray: ICommandArgument[] | any = (Array.isArray(args)
       ? args
       : [args]
