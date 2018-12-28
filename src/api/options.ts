@@ -17,6 +17,10 @@ export interface IBuilderOptions {
   // default: true
   warnUnresolvedVariables?: boolean;
 
+  // Throw exception on command arguments where variables have "no value" *
+  // default: false
+  throwUnresolvedVariables?: boolean;
+
   // Pattern for matching variables
   // default: \$\{(.+)\}
   variablePattern?: RegExp;

@@ -8,6 +8,7 @@ export const defaultOptions: IBuilderOptions = {
   rootDir: process.cwd(),
   shell: '/bin/bash',
   skipUnresolvedVariables: false,
+  throwUnresolvedVariables: false,
   variablePattern: /\$\{(.+)\}/,
   warnUnresolvedVariables: true
 };
