@@ -187,6 +187,7 @@ class CommandArgument implements ICommandArgument {
     utils?: IUtils
   ) {
     this.utils = utils || utilFactory();
+
     const newArgument = this.reducer(builderOptions, argument);
 
     this.prefix = prefix ? prefix.trim() : undefined;

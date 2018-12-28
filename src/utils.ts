@@ -8,7 +8,7 @@ import {
   ICommandEvalValueInput,
   TCommandArgumentInput
 } from './api';
-import { IUtils } from './api/utils';
+import { IUtils, IUtilsParam } from './api/utils';
 import { IBuilderUtils } from './api/utils/builder';
 import { ICommandUtils } from './api/utils/command';
 import { IFileUtils } from './api/utils/file';
@@ -155,16 +155,11 @@ class Predicate implements IPredicate {
   }
 }
 
-const utilFactory = (
-  builder?: IBuilderUtils,
-  command?: ICommandUtils,
-  file?: IFileUtils,
-  log?: ILogUtils
-): IUtils => ({
-  builder: builder || new BuilderUtils(),
-  command: command || new CommandUtils(),
-  file: file || new FileUtils(),
-  log: log || new LogUtils()
+const utilFactory = (utils?: IUtilsParam): IUtils => ({
+  builder: (utils && utils.builder) || new BuilderUtils(),
+  command: (utils && utils.command) || new CommandUtils(),
+  file: (utils && utils.file) || new FileUtils(),
+  log: (utils && utils.log) || new LogUtils()
 });
 
 export {
