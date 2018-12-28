@@ -5,7 +5,7 @@ import {
   ICommand
 } from './api';
 import { IUtils } from './api/utils';
-import { Command } from './command';
+import Command from './command';
 import { utilFactory } from './utils';
 
 class Builder implements IBuilder {

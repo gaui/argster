@@ -5,7 +5,7 @@ import {
   IBuilder,
   IBuilderOptions
 } from '../../src';
-import { Command } from '../../src/command';
+import Command from '../../src/command';
 
 const rootDir = path.join(__dirname, 'data');
 
