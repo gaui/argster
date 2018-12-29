@@ -14,7 +14,7 @@ import { ICommandUtils } from './api/utils/command';
 import { IFileUtils } from './api/utils/file';
 import { ILogUtils } from './api/utils/log';
 import { IPredicate } from './api/utils/predicate';
-import { defaultOptions } from './options';
+import { defaultOptions } from './defaults';
 
 /* tslint:disable:max-classes-per-file variable-name */
 

@@ -1,14 +1,15 @@
 import { IBuilderOptions } from './api/options';
+import transformers from './transformers';
+
+// tslint:disable object-literal-sort-keys
 
 export const defaultOptions: IBuilderOptions = {
-  dynamicVariables: {},
   rootDir: process.cwd(),
-  shell: '/bin/bash',
+  dynamicVariables: {},
   skipUnresolvedVariables: false,
+  warnUnresolvedVariables: true,
   throwUnresolvedVariables: false,
-  transformers: {
-    sentencesInQuotes: true
-  },
   variablePattern: /\$\{(.+)\}/,
-  warnUnresolvedVariables: true
+  shell: '/bin/bash',
+  transformers
 };
