@@ -98,11 +98,11 @@ class CommandUtils implements ICommandUtils {
         (a: ICommandArgument): ICommandArgument | undefined => {
           return new Predicate([
             {
-              predicate: val => typeof val === 'object',
-              replacer: val => val
+              predicate: (val: any) => typeof val === 'object',
+              replacer: (val: any) => val
             },
             {
-              predicate: val => typeof val === 'string',
+              predicate: (val: any) => typeof val === 'string',
               replacer: (val: string) => ({ argument: val })
             }
           ]).first(a);
