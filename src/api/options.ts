@@ -1,4 +1,4 @@
-import { ICommandEvalValueInput, IDynamicVariables } from '.';
+import { IAvailableTransformers } from './transformers';
 
 export interface IBuilderOptions {
   // Root dir to resolve all paths from
@@ -29,8 +29,8 @@ export interface IBuilderOptions {
   // default: /bin/bash
   shell?: string;
 
-  // Features to run on each argument
-  features?: IAvailableFeatures;
+  // Transformers to run on each argument
+  transformers?: IAvailableTransformers;
 }
 
 export interface IDynamicVariables {
@@ -41,13 +41,3 @@ export interface IArgumentFilePatterns {
   prefix: string;
   patterns: string[];
 }
-
-export interface IAvailableFeatures {
-  // Automatically put single quotes around sentences
-  // default: true
-  sentencesInQuotes?: boolean;
-}
-
-export type TFeatureEvaluator = {
-  [key in keyof IAvailableFeatures]: ICommandEvalValueInput<any, any>
-};

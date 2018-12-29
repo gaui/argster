@@ -3,10 +3,11 @@ import {
   ICommandArgument,
   ICommandEvalValueInput
 } from './api';
+import { ITransformer } from './api/transformers';
 import { IUtils } from './api/utils';
 import { IPredicate } from './api/utils/predicate';
 import { VariableUnresolvableException } from './exceptions';
-import features from './options';
+import transformers from './transformers';
 import { Predicate, utilFactory } from './utils';
 
 class CommandArgument implements ICommandArgument {
@@ -37,7 +38,7 @@ class CommandArgument implements ICommandArgument {
   private reducer(builderOptions: IBuilderOptions, argument: string): string {
     const fns = [
       this.resolveDynamicVariable.bind(this),
-      this.applyFeatures.bind(this)
+      this.applyTransformers.bind(this)
     ];
     const newArgument = fns.reduce(
       (acc, fn) => fn(builderOptions, acc) || '',
@@ -47,24 +48,24 @@ class CommandArgument implements ICommandArgument {
     return newArgument;
   }
 
-  private applyFeatures(
+  private applyTransformers(
     builderOptions: IBuilderOptions,
     argument?: string
   ): string | undefined {
-    if (!builderOptions.features) return;
+    if (!builderOptions.transformers) return;
 
-    const featuresActive = Object.keys(features)
-      .filter(x => builderOptions.features![x])
+    const transformersActive = Object.keys(transformers)
+      .filter(x => builderOptions.transformers![x])
       .map(
         x =>
           ({
-            predicate: features[x].predicate,
-            replacer: features[x].replacer
+            predicate: transformers[x].predicate,
+            replacer: transformers[x].replacer
           } as ICommandEvalValueInput<string, string>)
       );
 
-    const featurePredicate: IPredicate = new Predicate(featuresActive);
-    const resolvedValue = featurePredicate.all(argument);
+    const transformerPredicate: IPredicate = new Predicate(transformersActive);
+    const resolvedValue = transformerPredicate.all(argument);
 
     return resolvedValue;
   }
@@ -75,7 +76,7 @@ class CommandArgument implements ICommandArgument {
   ): string | undefined {
     if (!argument || !builderOptions.dynamicVariables) return;
 
-    const extractFn: Array<ICommandEvalValueInput<any, string>> = [
+    const extractFn: Array<ITransformer<any, string>> = [
       {
         predicate: (val: () => string) => val instanceof Function,
         replacer: (val: () => string) => val()

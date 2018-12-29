@@ -10,9 +10,11 @@ const createBuilder = (options?: IBuilderOptions, extraUtils?: IUtilsParam) => {
   return newBuilder;
 };
 
-describe('creating commands with features enabled', () => {
+describe('creating commands with transformers enabled', () => {
   test('it should return a long command with quotes', () => {
-    const builder = createBuilder({ features: { sentencesInQuotes: true } });
+    const builder = createBuilder({
+      transformers: { sentencesInQuotes: true }
+    });
     const cmd = builder.createCommand('test');
     cmd.appendArgument('foo bar baz');
 
@@ -20,9 +22,11 @@ describe('creating commands with features enabled', () => {
   });
 });
 
-describe('creating commands with features disabled', () => {
+describe('creating commands with transformers disabled', () => {
   test('it should return a long command without sentences in quotes', () => {
-    const builder = createBuilder({ features: { sentencesInQuotes: false } });
+    const builder = createBuilder({
+      transformers: { sentencesInQuotes: false }
+    });
     const cmd = builder.createCommand('test');
     cmd.appendArgument('foo bar baz');
 

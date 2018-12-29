@@ -34,11 +34,6 @@ export interface ICommandProcessOutput {
   stderr: any[];
 }
 
-export interface ICommandEvalValueInput<V, T> {
-  predicate: (val: V, injectedData?: any) => boolean;
-  replacer: (val: V, injectedData?: any) => T;
-}
-
 export type TCommandArgumentInput =
   | ICommandArgument
   | ICommandArgument[]
