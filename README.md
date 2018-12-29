@@ -42,7 +42,7 @@ read and each line assembled into a command string, which is then executed.
 
 **Example for `docker build`:**
 
-```json
+```javascript
 {
   prefix: '--build-arg',
   patterns: ['**/*.arg']
