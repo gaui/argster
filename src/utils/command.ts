@@ -1,4 +1,4 @@
-import { Predicate } from 'src/utils';
+import { Predicate } from '.';
 import { ICommandArgument, TCommandArgumentInput } from '../api';
 import { ICommandUtils } from '../api/utils/command';
 

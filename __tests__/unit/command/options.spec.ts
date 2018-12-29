@@ -1,11 +1,5 @@
-import { Builder, IBuilderOptions } from '../../../src';
-import { IUtilsParam } from '../../../src/api/utils';
 import { ILogUtils } from '../../../src/api/utils/log';
-import {
-  BuilderUtils,
-  factory as utilFactory,
-  FileUtils
-} from '../../../src/utils';
+import { BuilderUtils, FileUtils } from '../../../src/utils';
 import * as mock from '../../__mocks__/basic';
 
 const extensions = [
@@ -14,12 +8,6 @@ const extensions = [
     prefix: '--env'
   }
 ];
-
-const createBuilder = (options?: IBuilderOptions, extraUtils?: IUtilsParam) => {
-  const newUtils = utilFactory(extraUtils);
-  const newBuilder = new Builder({ rootDir: __dirname, ...options }, newUtils);
-  return newBuilder;
-};
 
 describe('default options', () => {
   const builderUtils = new BuilderUtils();
@@ -73,7 +61,7 @@ describe('creating commands with default builder options', () => {
     const fs = mock.fs('FOO=${BAR}');
     const utils = { file: new FileUtils(fs), log: mockLogUtil };
 
-    const builder = createBuilder(undefined, utils);
+    const builder = mock.createBuilder(undefined, utils);
     builder.createCommand('test', extensions);
     expect(mockLogUtil.warn).toBeCalledWith('Variable ${BAR} was not resolved');
   });
@@ -85,7 +73,10 @@ describe('creating commands with default builder options', () => {
       log: mock.logUtils
     };
 
-    const builder = createBuilder({ throwUnresolvedVariables: false }, utils);
+    const builder = mock.createBuilder(
+      { throwUnresolvedVariables: false },
+      utils
+    );
 
     expect(() => {
       builder.createCommand('test', extensions);
@@ -102,7 +93,10 @@ describe('creating commands with non-default builder options', () => {
     const fs = mock.fs('FOO=${BAR}');
     const utils = { file: new FileUtils(fs), log: mockLogUtil };
 
-    const builder = createBuilder({ warnUnresolvedVariables: true }, utils);
+    const builder = mock.createBuilder(
+      { warnUnresolvedVariables: true },
+      utils
+    );
     builder.createCommand('test', extensions);
     expect(mockLogUtil.warn).toBeCalledWith('Variable ${BAR} was not resolved');
   });
@@ -113,7 +107,10 @@ describe('creating commands with non-default builder options', () => {
     const fs = mock.fs('FOO=${BAR}');
     const utils = { file: new FileUtils(fs), log: mockLogUtil };
 
-    const builder = createBuilder({ warnUnresolvedVariables: false }, utils);
+    const builder = mock.createBuilder(
+      { warnUnresolvedVariables: false },
+      utils
+    );
     builder.createCommand('test', extensions);
     expect(mockLogUtil.warn).not.toBeCalled();
   });
@@ -125,7 +122,10 @@ describe('creating commands with non-default builder options', () => {
       log: mock.logUtils
     };
 
-    const builder = createBuilder({ throwUnresolvedVariables: true }, utils);
+    const builder = mock.createBuilder(
+      { throwUnresolvedVariables: true },
+      utils
+    );
 
     expect(() => {
       builder.createCommand('test', extensions);
@@ -136,7 +136,10 @@ describe('creating commands with non-default builder options', () => {
     const fs = mock.fs('FOO=${BAR}');
     const utils = { file: new FileUtils(fs), log: mock.logUtils };
 
-    const builder = createBuilder({ throwUnresolvedVariables: false }, utils);
+    const builder = mock.createBuilder(
+      { throwUnresolvedVariables: false },
+      utils
+    );
 
     expect(() => {
       builder.createCommand('test', extensions);
