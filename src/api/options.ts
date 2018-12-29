@@ -1,4 +1,4 @@
-import { IAvailableTransformers } from './transformers';
+import { ITransformers } from './transformers';
 
 export interface IBuilderOptions {
   // Root dir to resolve all paths from
@@ -30,7 +30,7 @@ export interface IBuilderOptions {
   shell?: string;
 
   // Transformers to run on each argument
-  transformers?: IAvailableTransformers;
+  transformers?: ITransformers;
 }
 
 export interface IDynamicVariables {
