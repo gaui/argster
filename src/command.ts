@@ -10,7 +10,7 @@ import {
 } from './api';
 import { IUtils } from './api/utils';
 import CommandArgument from './commandArgument';
-import { utilFactory } from './utils';
+import { factory as utilFactory } from './utils';
 
 class Command implements ICommand {
   public files: IArgumentFilePatterns[] = [];

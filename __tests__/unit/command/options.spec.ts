@@ -1,7 +1,11 @@
 import { Builder, IBuilderOptions } from '../../../src';
 import { IUtilsParam } from '../../../src/api/utils';
 import { ILogUtils } from '../../../src/api/utils/log';
-import { BuilderUtils, FileUtils, utilFactory } from '../../../src/utils';
+import {
+  BuilderUtils,
+  factory as utilFactory,
+  FileUtils
+} from '../../../src/utils';
 import * as mock from '../../__mocks__/basic';
 
 const extensions = [

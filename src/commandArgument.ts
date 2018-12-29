@@ -8,7 +8,7 @@ import { IUtils } from './api/utils';
 import { IPredicate } from './api/utils/predicate';
 import { VariableUnresolvableException } from './exceptions';
 import transformers from './transformers';
-import { Predicate, utilFactory } from './utils';
+import { factory as utilFactory, Predicate } from './utils';
 
 class CommandArgument implements ICommandArgument {
   public argument: string;

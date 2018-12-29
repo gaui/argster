@@ -1,9 +1,7 @@
 import { Builder, IBuilderOptions } from '../../../src';
 import { IUtilsParam } from '../../../src/api/utils';
 import transformers from '../../../src/transformers';
-import { utilFactory } from '../../../src/utils';
-
-// tslint:disable no-empty
+import { factory as utilFactory } from '../../../src/utils';
 
 const createBuilder = (options?: IBuilderOptions, extraUtils?: IUtilsParam) => {
   const newUtils = utilFactory(extraUtils);
