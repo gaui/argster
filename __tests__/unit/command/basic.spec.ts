@@ -98,6 +98,63 @@ describe('creating commands', () => {
     expect(fs.readFileSync).toBeCalledTimes(1);
   });
 
+  test('it should resolve multiple dynamic variables', () => {
+    const val = `
+      FOO=\${BAR}
+      BAR=\${FOO}
+    `;
+    const fs = mock.fs(val);
+    const utils = { file: new FileUtils(fs), log: mock.logUtils };
+
+    const builder = mock.createBuilder(
+      { dynamicVariables: { FOO: () => 'fooValue', BAR: () => 'someValue' } },
+      utils
+    );
+
+    const cmd = builder.createCommand('test', extensions);
+
+    expect(cmd.toString()).toBe('test --env FOO=someValue --env BAR=fooValue');
+    expect(fs.readFileSync).toBeCalledTimes(1);
+  });
+
+  test('it should only resolve some dynamic variables', () => {
+    const val = `
+      FOO=\${BAR}
+      BAR=\${FOO}
+    `;
+    const fs = mock.fs(val);
+    const utils = { file: new FileUtils(fs), log: mock.logUtils };
+
+    const builder = mock.createBuilder(
+      { dynamicVariables: { FOO: () => 'fooValue' } },
+      utils
+    );
+
+    const cmd = builder.createCommand('test', extensions);
+
+    expect(cmd.toString()).toBe('test --env FOO= --env BAR=fooValue');
+    expect(fs.readFileSync).toBeCalledTimes(1);
+  });
+
+  test('it should resolve both string and function dynamic variables', () => {
+    const val = `
+      FOO=\${BAR}
+      BAR=\${FOO}
+    `;
+    const fs = mock.fs(val);
+    const utils = { file: new FileUtils(fs), log: mock.logUtils };
+
+    const builder = mock.createBuilder(
+      { dynamicVariables: { FOO: 'fooValue', BAR: () => 'someValue' } },
+      utils
+    );
+
+    const cmd = builder.createCommand('test', extensions);
+
+    expect(cmd.toString()).toBe('test --env FOO=someValue --env BAR=fooValue');
+    expect(fs.readFileSync).toBeCalledTimes(1);
+  });
+
   test('it should not resolve dynamic variable', () => {
     const fs = mock.fs('FOO=${BAR}');
     const utils = { file: new FileUtils(fs), log: mock.logUtils };
