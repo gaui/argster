@@ -1,5 +1,5 @@
-import { FileUtils } from '../../../src/utils';
-import * as mock from '../../__mocks__/basic';
+import { FileUtils } from '../../src/utils';
+import * as mock from '../__mocks__/basic';
 
 const extensions = [
   {

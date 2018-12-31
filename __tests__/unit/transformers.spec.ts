@@ -1,5 +1,5 @@
-import * as transformers from '../../../src/transformer';
-import * as mock from '../../__mocks__/basic';
+import * as transformers from '../../src/transformer';
+import * as mock from '../__mocks__/basic';
 
 describe('transformers', () => {
   test('it should transform on first valid transformer (2nd)', () => {

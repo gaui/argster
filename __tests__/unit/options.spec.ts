@@ -1,6 +1,6 @@
-import { ILogUtils } from '../../../src/api/utils/log';
-import { BuilderUtils, FileUtils } from '../../../src/utils';
-import * as mock from '../../__mocks__/basic';
+import { ILogUtils } from '../../src/api/utils/log';
+import { BuilderUtils, FileUtils } from '../../src/utils';
+import * as mock from '../__mocks__/basic';
 
 const extensions = [
   {
