@@ -1,5 +1,3 @@
-import { ITransformers } from './transformers';
-
 export interface IBuilderOptions {
   // Root dir to resolve all paths from
   // default: process.cwd()
@@ -30,7 +28,7 @@ export interface IBuilderOptions {
   shell?: string;
 
   // Transformers to run on each argument
-  transformers?: ITransformers;
+  transformers?: string[];
 }
 
 export interface IDynamicVariables {

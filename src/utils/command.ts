@@ -1,6 +1,6 @@
-import { Predicate } from '.';
 import { ICommandArgument, TCommandArgumentInput } from '../api';
 import { ICommandUtils } from '../api/utils/command';
+import * as transformers from '../transformer';
 
 export default class CommandUtils implements ICommandUtils {
   public parseArgumentInput(args: TCommandArgumentInput): ICommandArgument[] {
@@ -10,7 +10,7 @@ export default class CommandUtils implements ICommandUtils {
     )
       .map(
         (a: ICommandArgument): ICommandArgument | undefined => {
-          return new Predicate([
+          return new transformers.Transformer([
             {
               predicate: (val: any) => typeof val === 'object',
               replacer: (val: any) => val

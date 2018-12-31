@@ -1,14 +1,8 @@
-import {
-  IBuilderOptions,
-  ICommandArgument,
-  ICommandEvalValueInput
-} from './api';
-import { ITransformer } from './api/transformers';
+import { IBuilderOptions, ICommandArgument } from './api';
 import { IUtils } from './api/utils';
-import { IPredicate } from './api/utils/predicate';
 import { VariableUnresolvableException } from './exceptions';
-import transformers from './transformers';
-import { factory as utilFactory, Predicate } from './utils';
+import * as transformers from './transformer';
+import { factory as utilFactory } from './utils';
 
 class CommandArgument implements ICommandArgument {
   public argument: string;
@@ -52,21 +46,17 @@ class CommandArgument implements ICommandArgument {
     builderOptions: IBuilderOptions,
     argument?: string
   ): string | undefined {
-    if (!builderOptions.transformers) return;
+    if (builderOptions.transformers && !builderOptions.transformers.length) {
+      return argument;
+    }
 
-    const transformersActive = Object.keys(transformers)
-      .filter(x => builderOptions.transformers![x])
-      .map(
-        x =>
-          ({
-            predicate: transformers[x].predicate,
-            replacer: transformers[x].replacer
-          } as ICommandEvalValueInput<string, string>)
-      );
+    const enabledTransformers = transformers.transformers.defaults.filter(
+      x => builderOptions.transformers!.indexOf(x.name) !== -1
+    );
 
-    const transformerPredicate: IPredicate = new Predicate(transformersActive);
-    const resolvedValue = transformerPredicate.all(argument);
-
+    const resolvedValue = new transformers.Transformer(enabledTransformers).all(
+      argument
+    );
     return resolvedValue;
   }
 
@@ -74,25 +64,18 @@ class CommandArgument implements ICommandArgument {
     builderOptions: IBuilderOptions,
     argument?: string
   ): string | undefined {
-    if (!argument || !builderOptions.dynamicVariables) return;
-
-    const extractFn: Array<ITransformer<any, string>> = [
-      {
-        predicate: (val: () => string) => val instanceof Function,
-        replacer: (val: () => string) => val()
-      },
-      {
-        predicate: (val: string) => typeof val === 'string',
-        replacer: (val: string) => val
-      }
-    ];
+    if (!argument || !builderOptions.dynamicVariables) {
+      return argument;
+    }
 
     const dynVariables = builderOptions.dynamicVariables;
-    const dynPredicate: IPredicate = new Predicate(extractFn);
     const dynVarPattern = builderOptions.variablePattern;
 
     const replacerFn = (match: any, actualValue: any): string => {
-      const resolvedValue = dynPredicate.first(dynVariables[actualValue]);
+      const resolvedValue = new transformers.Transformer(
+        transformers.transformers.dynamicVar
+      ).first(dynVariables[actualValue]);
+
       if (!resolvedValue) {
         const unresolved = new VariableUnresolvableException({
           argument,
