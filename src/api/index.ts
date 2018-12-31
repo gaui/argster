@@ -2,7 +2,6 @@ import { IBuilder } from './builder';
 import {
   ICommand,
   ICommandArgument,
-  ICommandEvalValueInput,
   ICommandProcess,
   ICommandProcessOutput,
   TCommandArgumentInput
@@ -19,7 +18,6 @@ export {
   TCommandArgumentInput,
   ICommand,
   ICommandArgument,
-  ICommandEvalValueInput,
   ICommandProcess,
   ICommandProcessOutput,
   IDynamicVariables,
