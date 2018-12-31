@@ -145,4 +145,26 @@ describe('creating commands with non-default builder options', () => {
       builder.createCommand('test', extensions);
     }).not.toThrow();
   });
+
+  test('it should skip unresolved variables', () => {
+    const val = `
+      FOO=\${BAR}
+      BAR=\${FOO}
+    `;
+    const fs = mock.fs(val);
+    const utils = { file: new FileUtils(fs), log: mock.logUtils };
+
+    const builder = mock.createBuilder(
+      {
+        dynamicVariables: { FOO: () => 'fooValue' },
+        skipUnresolvedVariables: true
+      },
+      utils
+    );
+
+    const cmd = builder.createCommand('test', extensions);
+
+    expect(cmd.toString()).toBe('test --env BAR=fooValue');
+    expect(fs.readFileSync).toBeCalledTimes(1);
+  });
 });

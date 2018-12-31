@@ -57,6 +57,7 @@ class CommandArgument implements ICommandArgument {
     const resolvedValue = new transformers.Transformer(enabledTransformers).all(
       argument
     );
+
     return resolvedValue;
   }
 
@@ -87,9 +88,12 @@ class CommandArgument implements ICommandArgument {
           this.utils.log.warn(unresolved.toString());
         }
 
-        if (builderOptions.skipUnresolvedVariables) return '';
-
-        if (builderOptions.throwUnresolvedVariables) throw unresolved;
+        if (
+          builderOptions.throwUnresolvedVariables ||
+          builderOptions.skipUnresolvedVariables
+        ) {
+          throw unresolved;
+        }
       }
 
       return resolvedValue || '';

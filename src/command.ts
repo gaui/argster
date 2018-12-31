@@ -129,14 +129,20 @@ class Command implements ICommand {
     argument: string,
     prefix?: string
   ): ICommandArgument | null {
-    const newObj = new CommandArgument(
-      this.builderOptions,
-      argument,
-      prefix,
-      this.utils
-    );
+    try {
+      const newObj = new CommandArgument(
+        this.builderOptions,
+        argument,
+        prefix,
+        this.utils
+      );
 
-    if (Object.keys(newObj).length) return newObj;
+      if (Object.keys(newObj).length) return newObj;
+    } catch (e) {
+      if (this.builderOptions.throwUnresolvedVariables) {
+        throw e;
+      }
+    }
 
     return null;
   }
