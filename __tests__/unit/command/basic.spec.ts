@@ -41,6 +41,14 @@ describe('creating commands', () => {
     expect(cmd.toString()).toBe('foo arg1 arg2');
   });
 
+  test('it should return a command with arguments appended in right order (FP style)', () => {
+    const builder = mock.createBuilder();
+    const cmd = builder.createCommand('foo');
+    cmd.appendArgument('arg1').appendArgument('arg2');
+
+    expect(cmd.toString()).toBe('foo arg1 arg2');
+  });
+
   test('it should return a command with arguments both prepended and appended', () => {
     const builder = mock.createBuilder();
     const cmd = builder.createCommand('foo');
@@ -50,6 +58,22 @@ describe('creating commands', () => {
     cmd.appendArgument('append2');
     cmd.prependArgument('prepend2');
     cmd.prependArgument('prepend3');
+
+    expect(cmd.toString()).toBe(
+      'foo prepend3 prepend2 prepend1 append3 append1 append2'
+    );
+  });
+
+  test('it should return a command with arguments both prepended and appended (FP style)', () => {
+    const builder = mock.createBuilder();
+    const cmd = builder.createCommand('foo');
+    cmd
+      .appendArgument('append3')
+      .appendArgument('append1')
+      .prependArgument('prepend1')
+      .appendArgument('append2')
+      .prependArgument('prepend2')
+      .prependArgument('prepend3');
 
     expect(cmd.toString()).toBe(
       'foo prepend3 prepend2 prepend1 append3 append1 append2'

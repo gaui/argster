@@ -92,16 +92,20 @@ class Command implements ICommand {
     return commandProcess;
   }
 
-  public prependArgument(argument: ICommandArgument): void {
+  public prependArgument(argument: ICommandArgument): ICommand {
     this.argumentHelper(argument, (arg: ICommandArgument) => {
       this.arguments.unshift(arg);
     });
+
+    return this;
   }
 
-  public appendArgument(argument: ICommandArgument): void {
+  public appendArgument(argument: ICommandArgument): ICommand {
     this.argumentHelper(argument, (arg: ICommandArgument) => {
       this.arguments.push(arg);
     });
+
+    return this;
   }
 
   public toArray(): ReadonlyArray<string> {

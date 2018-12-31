@@ -7,8 +7,8 @@ export interface ICommand {
     stdout?: (chunk: any) => any,
     stderr?: (chunk: any) => any
   ): ICommandProcess;
-  prependArgument(argument: TCommandArgumentInput): void;
-  appendArgument(argument: TCommandArgumentInput): void;
+  prependArgument(argument: TCommandArgumentInput): ICommand;
+  appendArgument(argument: TCommandArgumentInput): ICommand;
   toString(): string;
   toArray(): ReadonlyArray<string>;
 }
