@@ -47,7 +47,10 @@ export default class FileUtils implements IFileUtils {
     const content = this.fsInstance.readFileSync(fileName, {
       encoding: 'utf8'
     });
-    const contentArray = content.split('\n').filter(Boolean);
+    const contentArray = content
+      .split('\n')
+      .map((x: any) => x.trim())
+      .filter(Boolean);
 
     return contentArray;
   }
