@@ -32,7 +32,7 @@ export interface IBuilderOptions {
 }
 
 export interface IDynamicVariables {
-  [key: string]: () => any;
+  [key: string]: any | (() => any);
 }
 
 export interface IArgumentFilePatterns {
