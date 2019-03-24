@@ -1,4 +1,4 @@
-import { exec } from 'child_process';
+import { exec, ChildProcess } from 'child_process';
 import {
   IArgumentFileContents,
   IArgumentFilePatterns,
@@ -45,8 +45,9 @@ class Command implements ICommand {
     stderr?: (chunk: any) => void
   ): ICommandProcess {
     const cmd = exec(this.toString(), { shell: this.builderOptions.shell });
-    const stdoutArray: any[] = [];
-    const stderrArray: any[] = [];
+
+    const stdoutArray = this.createStdStream(cmd, 'stdout', stdout);
+    const stderrArray = this.createStdStream(cmd, 'stderr', stderr);
 
     const promise = new Promise<ICommandProcessOutput>((resolve, reject) => {
       const successFn = (code: number, signal: string) => {
@@ -64,24 +65,10 @@ class Command implements ICommand {
         }
       };
 
+      const errorFn = (err: any) => reject(err);
+
       cmd.on('close', successFn);
-      cmd.on('error', (err: any) => reject(err));
-    });
-
-    cmd.stdout.on('data', chunk => {
-      if (stdout) {
-        stdout(chunk);
-      }
-
-      stdoutArray.push(chunk);
-    });
-
-    cmd.stderr.on('data', chunk => {
-      if (stderr) {
-        stderr(chunk);
-      }
-
-      stderrArray.push(chunk);
+      cmd.on('error', errorFn);
     });
 
     const commandProcess: ICommandProcess = {
@@ -178,6 +165,26 @@ class Command implements ICommand {
         callback(arg);
       }
     });
+  }
+
+  private createStdStream(
+    cmd: ChildProcess,
+    type: 'stdout' | 'stderr',
+    callback?: (chunk: any) => void
+  ) {
+    const array: any[] = [];
+
+    if (cmd[type]) {
+      cmd[type]!.on('data', chunk => {
+        if (callback) {
+          callback(chunk);
+        }
+
+        array.push(chunk);
+      });
+    }
+
+    return array;
   }
 }
 
