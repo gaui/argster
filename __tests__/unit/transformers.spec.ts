@@ -3,7 +3,7 @@ import * as mock from '../__mocks__/basic';
 
 describe('transformers', () => {
   test('it should transform on first valid transformer (2nd)', () => {
-    const t = new transformers.Transformer([
+    const t = transformers.multiple<any, any>([
       {
         predicate: (val: any) => val.indexOf('_') !== -1,
         replacer: (val: any) => `-${val}-`
@@ -14,13 +14,13 @@ describe('transformers', () => {
       }
     ]);
 
-    const v = t.first('foo');
+    const v = t('foo');
 
     expect(v).toBe('_foo_');
   });
 
   test('it should transform on all valid transformers', () => {
-    const t = new transformers.Transformer([
+    const t = transformers.multiple<any, any>([
       {
         predicate: () => true,
         replacer: (val: any) => `-${val}-`
@@ -31,27 +31,26 @@ describe('transformers', () => {
       }
     ]);
 
-    const v = t.all('foo');
+    const v = t('foo');
 
     expect(v).toBe('_-foo-_');
   });
 
-  test('it should transform on a single named transformer', () => {
-    const t = new transformers.Transformer([
+  test('it should transform on all valid transformers', () => {
+    const t = transformers.multiple<any, any>([
       {
         predicate: () => true,
         replacer: (val: any) => `-${val}-`
       },
       {
-        name: 'double',
         predicate: () => true,
         replacer: (val: any) => `${val}${val}`
       }
     ]);
 
-    const v = t.single('foo', 'double');
+    const v = t('foo');
 
-    expect(v).toBe('foofoo');
+    expect(v).toBe('-foo--foo-');
   });
 });
 

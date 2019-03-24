@@ -1,12 +1,11 @@
-export interface ITransform<V, T> {
-  name?: string;
-  predicate: (val: V) => boolean;
-  replacer: (val: V) => T;
+export interface ITransformers {
+  [key: string]: ITransformer<any, any>;
 }
 
-export interface ITransformer {
-  append(transformers: Array<ITransform<any, any>>): void;
-  all(subject: any): any;
-  single(subject: any, transformerName: string): any;
-  first(subject: any): any | undefined;
+export interface ITransformer<V, T> {
+  predicate: IPredicate<V>;
+  replacer: IReplacer<V, T>;
 }
+
+export type IPredicate<V> = (val: V) => boolean;
+export type IReplacer<V, T> = (val: V) => T | V;

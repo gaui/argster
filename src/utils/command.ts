@@ -10,7 +10,7 @@ export default class CommandUtils implements ICommandUtils {
     )
       .map(
         (a: ICommandArgument): ICommandArgument | undefined => {
-          return new transformers.Transformer([
+          return transformers.multiple([
             {
               predicate: (val: any) => typeof val === 'object',
               replacer: (val: any) => val
@@ -19,7 +19,7 @@ export default class CommandUtils implements ICommandUtils {
               predicate: (val: any) => typeof val === 'string',
               replacer: (val: string) => ({ argument: val })
             }
-          ]).first(a);
+          ])(a);
         }
       )
       .filter(Boolean);

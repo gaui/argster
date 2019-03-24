@@ -1,70 +1,57 @@
-import { ITransform, ITransformer } from './api/transformer';
+import R from 'ramda';
+import { ITransformer, ITransformers } from './api/transformer';
 
-// tslint:disable no-shadowed-variable
+// Transformer is:
+// - a function which takes in some value, checks if predicate matches
+//   and runs replacer on it and returns the new value.
+// - a function which takes in some value and a pattern, and runs replacer on
+//   each match and returns the new value.
 
-class Transformer implements ITransformer {
-  private _transformers: Array<ITransform<any, any>>;
-
-  constructor(transformers: Array<ITransform<any, any>>) {
-    this._transformers = transformers;
-  }
-
-  public append(transformers: Array<ITransform<any, any>>) {
-    this._transformers = this._transformers.concat(transformers);
-  }
-
-  public all(subject: any): any {
-    return this.run(subject);
-  }
-
-  public single(subject: any, transformerName: string): any {
-    const transformer = this.getByName(transformerName);
-    if (!transformer) return subject;
-    return transformer.replacer(subject);
-  }
-
-  public first(subject: any): any | undefined {
-    const match = this.getByPredicate(subject);
-    if (!match) return subject;
-    else return match.replacer(subject);
-  }
-
-  private getByName = (
-    transformerName: string
-  ): ITransform<any, any> | undefined =>
-    this._transformers.find(x => x.name === transformerName);
-
-  private getByPredicate = (subject: any): ITransform<any, any> | undefined =>
-    this._transformers.find(x => x.predicate(subject));
-
-  private run = (subject: any) =>
-    this._transformers.reduce((acc: any, f: ITransform<any, any>) => {
-      if (f.predicate(acc)) return f.replacer(acc);
-      else return subject;
-    }, subject);
-}
-
-const transformers = {
-  defaults: [
-    {
-      name: 'sentencesInQuotes',
-      predicate: (val: string): boolean => {
-        if (!val) return false;
-        return val.split(' ').length > 1;
-      },
-      replacer: (val: string): string => `"${val}"`
-    }
-  ],
-  dynamicVar: [
-    {
-      predicate: (val: () => string) => val instanceof Function,
-      replacer: (val: () => string) => val()
+const transformers: ITransformers = {
+  raw: {
+    predicate: () => true,
+    replacer: (val: string): string => val
+  },
+  sentencesInQuotes: {
+    predicate: (val: string): boolean => {
+      if (!val) return false;
+      return val.split(' ').length > 1;
     },
-    {
-      predicate: (val: string) => typeof val === 'string',
-      replacer: (val: string) => val
-    }
-  ]
+    replacer: (val: string): string => `"${val}"`
+  }
 };
 
-export { Transformer, transformers };
+const one = <V, T>(trans?: ITransformer<V, T>) => createTransformer(trans);
+
+const multiple = <V, T>(trans: Array<ITransformer<V, T>>) =>
+  R.pipe.call(null, ...trans.map(t => createTransformer<V, T>(t)));
+
+const pattern = <V extends string, T>(
+  regex: RegExp,
+  trans?: ITransformer<V, T>
+) => (val: V) =>
+  val.replace(new RegExp(regex, 'gim'), createTransformer<V, any>(trans));
+
+// Handling functions
+
+const createTransformer = <V, T>(trans?: ITransformer<V, T>): ((val: V) => T) =>
+  R.pipe(
+    transformValue(getTransformer(trans)),
+    getValue
+  );
+
+const getValue = <V>(val: V) => (val instanceof Function ? val() : val);
+const getTransformer = <V, T>(trans?: ITransformer<V, T>): ITransformer<V, T> =>
+  trans || transformers.default;
+
+const transformValue = <V, T>(trans: ITransformer<V, T>) => (
+  val: V
+): Array<V | T> | (V | T) =>
+  Array.isArray(val)
+    ? val.map(transformSingle(trans))
+    : transformSingle<V, T>(trans)(val);
+
+const transformSingle = <V, T>(trans: ITransformer<V, T>) => (val: V): V | T =>
+  trans.predicate(val) ? trans.replacer(val) : val;
+
+export { transformers, one, multiple, pattern };

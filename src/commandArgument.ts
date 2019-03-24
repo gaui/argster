@@ -46,17 +46,16 @@ class CommandArgument implements ICommandArgument {
     builderOptions: IBuilderOptions,
     argument?: string
   ): string | undefined {
-    if (builderOptions.transformers && !builderOptions.transformers.length) {
+    if (!builderOptions.transformers || !builderOptions.transformers.length) {
       return argument;
     }
 
-    const enabledTransformers = transformers.transformers.defaults.filter(
-      x => builderOptions.transformers!.indexOf(x.name) !== -1
+    const transformerList = builderOptions.transformers.map(t =>
+      typeof t === 'string' ? transformers.transformers[t] : t
     );
-
-    const resolvedValue = new transformers.Transformer(enabledTransformers).all(
-      argument
-    );
+    const resolvedValue = transformers.multiple<string | undefined, string>(
+      transformerList
+    )(argument);
 
     return resolvedValue;
   }
@@ -73,9 +72,9 @@ class CommandArgument implements ICommandArgument {
     const dynVarPattern = builderOptions.variablePattern;
 
     const replacerFn = (match: any, actualValue: any): string => {
-      const resolvedValue = new transformers.Transformer(
-        transformers.transformers.dynamicVar
-      ).first(dynVariables[actualValue]);
+      const resolvedValue = transformers.one(transformers.transformers.raw)(
+        dynVariables[actualValue]
+      );
 
       if (!resolvedValue) {
         const unresolved = new VariableUnresolvableException({
