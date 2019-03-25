@@ -144,6 +144,13 @@ class Command implements ICommand {
     const commands: ICommandArgument[] = [];
     for (const arg of contents) {
       arg.contents.forEach((line: string) => {
+        if (
+          this.builderOptions.lineIgnorePattern &&
+          this.builderOptions.lineIgnorePattern.test(line)
+        ) {
+          return;
+        }
+
         const argument = this.createArgument(line, arg.files.prefix);
 
         if (argument) {

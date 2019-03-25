@@ -39,6 +39,12 @@ describe('default options', () => {
     expect(defaultOptions.variablePattern).toEqual(expectedPattern);
   });
 
+  test('it should have a specific line ignore pattern', () => {
+    const expectedPattern = /^(\#|\/{2,})/;
+
+    expect(defaultOptions.lineIgnorePattern).toEqual(expectedPattern);
+  });
+
   test('it should not convert variables', () => {
     expect(defaultOptions.convertVariables).toBeFalsy();
   });
@@ -82,6 +88,22 @@ describe('creating commands with default builder options', () => {
     expect(() => {
       builder.createCommand('test', extensions);
     }).not.toThrow();
+  });
+
+  test('it should skip comment lines based on line ignore pattern', () => {
+    const content = `
+      ## FOO=BAR
+      BAR=FOO
+      // SMU=BAZ
+    `;
+    const fs = mock.fs(content);
+    const utils = { file: new FileUtils(fs), log: mock.logUtils };
+
+    const builder = mock.createBuilder(undefined, utils);
+
+    const cmd = builder.createCommand('test', extensions);
+
+    expect(cmd.toString()).toBe('test --env BAR=FOO');
   });
 
   test('it should not convert variables', () => {

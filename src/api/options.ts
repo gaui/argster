@@ -25,6 +25,10 @@ export interface IBuilderOptions {
   // default: /\$\{(.+)\}/
   variablePattern?: RegExp;
 
+  // Pattern for ignoring lines in variable files
+  // default: /^(\#|\/{2,})/
+  lineIgnorePattern?: RegExp;
+
   // Convert variables based on format. An example would be to convert
   // Windows environment variables to Linux, that is %FOO% -> $FOO
   // default: false

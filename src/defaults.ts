@@ -9,6 +9,7 @@ export const defaultOptions: IBuilderOptions = {
   warnUnresolvedVariables: true,
   throwUnresolvedVariables: false,
   variablePattern: /\$\{(.+)\}/,
+  lineIgnorePattern: /^(\#|\/{2,})/,
   convertVariables: false,
   shell: '/bin/bash',
   transformers: ['sentencesInQuotes']
