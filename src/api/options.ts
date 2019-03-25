@@ -25,6 +25,11 @@ export interface IBuilderOptions {
   // default: \$\{(.+)\}
   variablePattern?: RegExp;
 
+  // Convert variables based on format. An example would be to convert
+  // Windows environment variables to Linux, that is %FOO% -> $FOO
+  // default: false
+  convertVariables?: IConvertVariableOption;
+
   // Shell to use for executing commands
   // default: /bin/bash
   shell?: string;
@@ -32,6 +37,16 @@ export interface IBuilderOptions {
   // Transformers to run on each argument
   transformers?: Array<ITransformer<any, any> | string>;
 }
+
+export type IConvertVariableOption =
+  | false
+  | [
+      true,
+      {
+        from: RegExp;
+        to: string;
+      }
+    ];
 
 export interface IDynamicVariables {
   [key: string]: any | (() => any);

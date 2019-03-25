@@ -39,6 +39,10 @@ describe('default options', () => {
     expect(defaultOptions.variablePattern).toEqual(expectedPattern);
   });
 
+  test('it should not convert variables', () => {
+    expect(defaultOptions.convertVariables).toBeFalsy();
+  });
+
   test('it should have bash as shell', () => {
     expect(defaultOptions.shell).toBe('/bin/bash');
   });
@@ -73,14 +77,24 @@ describe('creating commands with default builder options', () => {
       log: mock.logUtils
     };
 
-    const builder = mock.createBuilder(
-      { throwUnresolvedVariables: false },
-      utils
-    );
+    const builder = mock.createBuilder(undefined, utils);
 
     expect(() => {
       builder.createCommand('test', extensions);
     }).not.toThrow();
+  });
+
+  test('it should not convert variables', () => {
+    const fs = mock.fs('FOO=%BAR%');
+    const utils = { file: new FileUtils(fs), log: mock.logUtils };
+
+    const builder = mock.createBuilder(undefined, utils);
+
+    const cmd = builder.createCommand('test', extensions);
+
+    expect(builder.options.convertVariables).toBeFalsy();
+    expect(cmd.toString()).toBe('test --env FOO=%BAR%');
+    expect(fs.readFileSync).toBeCalledTimes(1);
   });
 });
 
@@ -166,5 +180,19 @@ describe('creating commands with non-default builder options', () => {
 
     expect(cmd.toString()).toBe('test --env BAR=fooValue');
     expect(fs.readFileSync).toBeCalledTimes(1);
+  });
+
+  test('it should convert variables from Windows format to Linux format', () => {
+    const fs = mock.fs('FOO=%BAR%');
+    const utils = { file: new FileUtils(fs), log: mock.logUtils };
+
+    const builder = mock.createBuilder(
+      { convertVariables: [true, { from: /\%([A-Z]+)\%/, to: '$$$1' }] },
+      utils
+    );
+
+    const cmd = builder.createCommand('test', extensions);
+
+    expect(cmd.toString()).toBe('test --env FOO=$BAR');
   });
 });
