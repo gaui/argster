@@ -22,7 +22,7 @@ export interface IBuilderOptions {
   throwUnresolvedVariables?: boolean;
 
   // Pattern for matching variables
-  // default: \$\{(.+)\}
+  // default: /\$\{(.+)\}/
   variablePattern?: RegExp;
 
   // Convert variables based on format. An example would be to convert
