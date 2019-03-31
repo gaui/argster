@@ -3,13 +3,36 @@ import { IArgumentFilePatterns } from './options';
 /* tslint:disable:no-empty-interface */
 
 export interface ICommand {
+  /**
+   * Executes a command
+   * @param stdout Callback on STDOUT
+   * @param stderr Callback on STDERR
+   */
   exec(
     stdout?: (chunk: string) => string,
     stderr?: (chunk: string) => string
   ): ICommandProcess;
+
+  /**
+   * Prepend an argument
+   * @param argument Argument
+   */
   prependArgument(argument: TCommandArgumentInput): ICommand;
+
+  /**
+   * Append an argument
+   * @param argument Argument
+   */
   appendArgument(argument: TCommandArgumentInput): ICommand;
+
+  /**
+   * Get the command string
+   */
   toString(): string;
+
+  /**
+   * Get the command string as an array
+   */
   toArray(): ReadonlyArray<string>;
 }
 
