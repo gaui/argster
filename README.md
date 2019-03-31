@@ -2,9 +2,9 @@
 
 A simple command/argument manager with a simple API that makes it easy to build commands and arguments.
 
-## Usage
+## Examples
 
-Check out the examples folder to see how this can be used.
+Check out this [CodeSandbox](https://codesandbox.io/s/lyjjqzv38q).
 
 ## Setup
 
