@@ -53,7 +53,7 @@ export type IConvertVariableOption =
     ];
 
 export interface IDynamicVariables {
-  [key: string]: unknown | (() => unknown);
+  [key: string]: string | (() => string);
 }
 
 export interface IArgumentFilePatterns {

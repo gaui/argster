@@ -20,7 +20,7 @@ const extensions: IArgumentFilePatterns[] = [
   }
 ];
 
-const createBuilder = (options?: IBuilderOptions) => {
+const createBuilder = (options?: IBuilderOptions): Builder => {
   const newBuilder = new Builder(Object.assign({}, options, { rootDir }));
   return newBuilder;
 };
@@ -40,7 +40,7 @@ describe('creating commands', () => {
 
   test('it should return correct amount of commands', () => {
     const count = 3;
-    [...Array(count)].forEach(i => {
+    [...Array(count)].forEach(() => {
       builder.createCommand('test', extensions);
     });
     const cmds = builder.getAllCommands();

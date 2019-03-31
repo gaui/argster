@@ -54,7 +54,9 @@ class CommandArgument implements ICommandArgument {
     const transformerList = builderOptions.transformers.map(t =>
       typeof t === 'string' ? transformers.transformers[t] : t
     );
-    const resolvedValue = transformers.multiple(transformerList)(argument);
+    const resolvedValue = transformers.multiple<string, string>(
+      transformerList
+    )(argument);
 
     return resolvedValue;
   }
@@ -72,7 +74,7 @@ class CommandArgument implements ICommandArgument {
 
     const replacerFn = (match: string, actualValue: string): string => {
       const resolvedValue = transformers.one(transformers.transformers.raw)(
-        dynVariables[actualValue]
+        dynVariables[actualValue] as string
       );
 
       if (!resolvedValue) {

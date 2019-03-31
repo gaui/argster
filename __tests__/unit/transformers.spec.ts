@@ -3,14 +3,14 @@ import * as mock from '../__mocks__/basic';
 
 describe('transformers', () => {
   test('it should transform on first valid transformer (2nd)', () => {
-    const t = transformers.multiple<any, any>([
+    const t = transformers.multiple<string, string>([
       {
-        predicate: (val: any) => val.indexOf('_') !== -1,
-        replacer: (val: any) => `-${val}-`
+        predicate: (val: string) => val.indexOf('_') !== -1,
+        replacer: (val: string) => `-${val}-`
       },
       {
-        predicate: (val: any) => val.indexOf('_') === -1,
-        replacer: (val: any) => `_${val}_`
+        predicate: (val: string) => val.indexOf('_') === -1,
+        replacer: (val: string) => `_${val}_`
       }
     ]);
 
@@ -20,14 +20,14 @@ describe('transformers', () => {
   });
 
   test('it should transform on all valid transformers', () => {
-    const t = transformers.multiple<any, any>([
+    const t = transformers.multiple<string, string>([
       {
         predicate: () => true,
-        replacer: (val: any) => `-${val}-`
+        replacer: (val: string) => `-${val}-`
       },
       {
         predicate: () => true,
-        replacer: (val: any) => `_${val}_`
+        replacer: (val: string) => `_${val}_`
       }
     ]);
 
@@ -37,14 +37,14 @@ describe('transformers', () => {
   });
 
   test('it should transform on all valid transformers', () => {
-    const t = transformers.multiple<any, any>([
+    const t = transformers.multiple<string, string>([
       {
         predicate: () => true,
-        replacer: (val: any) => `-${val}-`
+        replacer: (val: string) => `-${val}-`
       },
       {
         predicate: () => true,
-        replacer: (val: any) => `${val}${val}`
+        replacer: (val: string) => `${val}${val}`
       }
     ]);
 

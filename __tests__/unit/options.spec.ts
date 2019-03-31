@@ -56,7 +56,7 @@ describe('default options', () => {
   test('it should have specific default transformers', () => {
     const expectedTransformers = ['sentencesInQuotes'];
 
-    expect(defaultOptions.transformers!).toEqual(
+    expect(defaultOptions.transformers).toEqual(
       expect.arrayContaining(expectedTransformers)
     );
   });
