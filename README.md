@@ -55,7 +55,38 @@ read and each line assembled into a command string, which is then executed.
 
 All files matching the glob pattern `**/*.arg` and `**/*.lbl` would be read and a command generated from those arguments.
 
-##### `./foo/file.arg`
+When the command arguments are evaluated, a finalized command string is generated from those file contents.
+
+To explain...
+
+#### 1. If we created the following builder/command
+
+```typescript
+const extensions = [
+  {
+    prefix: '--build-arg',
+    patterns: ['**/*.arg']
+  },
+  {
+    prefix: '--label',
+    patterns: ['**/*.lbl']
+  }
+];
+
+const options = {
+  dynamicVariables: {
+    BUILD_DATE: () => new Date().toISOString().slice(0, 10)
+  }
+};
+
+const builder = new Builder(options);
+const command = builder.createCommand('docker build .', extensions);
+command.exec();
+```
+
+#### 2. And had these pattern files
+
+**`./foo/file.arg`**
 
 ```ini
 VAR1=VAL1
@@ -63,19 +94,137 @@ VAR2=VAL2
 VAR3=VAL3
 ```
 
-##### `./foo/bar/file.lbl`
+**`./foo/bar/file.lbl`**
 
 ```ini
 org.label-schema.build-date=${BUILD_DATE}
 org.label-schema.name=MyProject
 ```
 
-When the command arguments are evaluated, a finalized command is then generated from those arguments.
+#### 3. This would be the generated command that would be executed
 
-**Example:**
 
 ```bash
---build-arg VAR1=VAL1 --build-arg VAR2=VAL2 --build-arg VAR3=VAL3 --label org.label-schema.build-date=2018-08-03 --label org.label-schema.name=MyProject
+docker build . --build-arg VAR1=VAL1 --build-arg VAR2=VAL2 --build-arg VAR3=VAL3 --label org.label-schema.build-date=2018-08-03 --label org.label-schema.name=MyProject
+```
+
+Take a look at how the `${BUILD_DATE}` argument now has the actual date. This is based on the dynamic variable we specified in the builder options above.
+
+### Builder Options
+
+#### rootDir
+
+Root directory to resolve all paths from.
+
+##### Default
+
+`process.cwd()`
+
+#### dynamicVariables
+
+Key-Value map containing the name of the variable and its value.
+
+##### Possible values
+
+ ```typescript
+[key: string]: string | (() => string);
+```
+
+##### Example
+
+```typescript
+{
+  BUILD_DATE: () => new Date().toISOString().slice(0, 10),
+  VERSION: '1.0.0'
+}
+```
+
+#### skip/warn/throw UnresolvedVariables
+
+Handling of unresolved variables. These are the possible options:
+
+- `skipUnresolvedVariables` (Default: `false`)
+  - Skip command arguments where variables have no value
+- `warnUnresolvedVariables` (Default: `true`)
+  - Warn on command arguments where variables have no value
+- `throwUnresolvedVariables` (Default: `false`)
+  - Throw exception on command arguments where variables have no value
+
+#### variablePattern
+
+RegExp pattern for matching variables.
+
+For example: `${SOME_VARIABLE}`
+
+##### Default
+
+`/\$\{(.+)\}/`
+
+#### lineIgnorePattern
+
+RegExp pattern for ignoring lines in files when generating arguments.
+
+For example: `# Some comment` or `// Some comment`
+
+##### Default
+
+`/^(\#|\/{2,})/`
+
+#### convertVariables
+
+Convert variables based on format. An example would be to convert Windows environment variables to Linux or vice versa.
+
+For example: `%FOO% -> $FOO`
+
+##### Possible values
+
+ ```typescript
+false
+  | [
+      true,
+      {
+        from: RegExp;
+        to: string;
+      }
+    ];
+```
+
+##### Example
+
+```typescript
+[true, { from: /\%([A-Z]+)\%/, to: '$$$1' }]
+```
+
+This would convert all Windows variables `%FOO%` to Linux variables `$FOO`
+
+#### shell
+
+Shell to use for executing commands
+
+##### Default
+
+`/bin/bash`
+
+#### transformers
+
+Transformer is an object which consists of two parts: `predicate` and `replacer`.
+
+- `predicate` is a function that returns a boolean.
+- `replacer` is a function that returns a new value.
+
+
+##### Example
+
+Here's a simple *transformer* that surrounds sentences in quotes.
+
+```typescript
+sentencesInQuotes: {
+  predicate: (val: string): boolean => {
+    if (!val) return false;
+    return val.split(' ').length > 1;
+  },
+  replacer: (val: string): string => `"${val}"`
+}
 ```
 
 ## API
@@ -102,49 +251,40 @@ createCommand(
 getAllCommands(): ICommand[];
 ```
 
-### IBuilderOptions
+### ICommand
 
 ```typescript
-// Root dir to resolve all paths from
-// default: process.cwd()
-rootDir?: string;
+/**
+ * Executes a command
+ * @param stdout Callback on STDOUT
+ * @param stderr Callback on STDERR
+ */
+exec(
+  stdout?: (chunk: string) => string,
+  stderr?: (chunk: string) => string
+): ICommandProcess;
 
-// Key-Value map containing the name of the variable
-// and its value (function/lambda)
-dynamicVariables?: IDynamicVariables;
+/**
+ * Prepend an argument
+ * @param argument Argument
+ */
+prependArgument(argument: TCommandArgumentInput): ICommand;
 
-// Skip command arguments where variables have "no value" *
-// default: false
-skipUnresolvedVariables?: boolean;
+/**
+ * Append an argument
+ * @param argument Argument
+ */
+appendArgument(argument: TCommandArgumentInput): ICommand;
 
-// Warn on command arguments where variables have "no value" *
-// default: true
-warnUnresolvedVariables?: boolean;
+/**
+ * Get the command string
+ */
+toString(): string;
 
-// Automatically put single quotes around sentences
-// default: true
-sentencesInQuotes?: boolean;
-
-// Pattern for matching variables
-// default: \$\{(.+)\}
-variablePattern?: RegExp;
-```
-
-**"no value" =** `null | undefined | ''`
-
-### IDynamicVariables
-
-```typescript
-[key: string]: () => any;
-```
-
-#### Example
-
-```typescript
-{
-  BUILD_DATE: () => new Date().toISOString().slice(0, 10),
-  VERSION: () => '1.0.0'
-}
+/**
+ * Get the command string as an array
+ */
+toArray(): ReadonlyArray<string>;
 ```
 
 ## How it works
@@ -155,13 +295,15 @@ When creating [commands](#command) through the builder, it goes through the list
 
 ## Roadmap
 
-- Tests for core functionality
-- Batch command handling
-- Chaining of creating commands and arguments
-- Optimizations + asynchronous operations
-- Add various events useful for consumers
-- Interactive process attaching, e.g. for `docker run -it`
+- Set up CI to run automated tests
+- Plugin / Middleware architecture
+  - Ability to hook into events
+  - Ability to add custom behavior with middlewares
+  - Ability to create custom transformers
 - CLI
+- Optimizations + asynchronous operations
+- Batch command handling
+- Interactive process attaching, e.g. for `docker run -it`
 
 ## Contributing
 
@@ -169,23 +311,38 @@ All contributions are very well appreciated. Just fork this repo and [submit a P
 
 Just remember to run the following beforehand:
 
+- `yarn test`
 - `yarn typecheck`
 - `yarn format`
 - `yarn lint`
 
 ## Changelog
 
+### 1.2.0
+
+- **feat:** Added the option to convert platform specific variables with the [`convertVariables` option](#convertVariables).
+- **feat:** Added the option to ignore lines based on a RegExp pattern with the [`lineIgnorePattern` option](#lineIgnorePattern), e.g. comment lines starting with `#` or `//`
+- **feat:** Dynamic Variables can now be [primitive values instead of only functions](#dynamicVariables).
+- **feat:** Now possible to chain `prependArgument()` and `appendArgument()` functions on  `ICommand`.
+- **feat:** New option `throwUnresolvedVariables` that throws an exception and stops the process when handling variables that cannot be resolved.
+- **fix:** Empty arguments resulted in the string `undefined`.
+- **chore:** Unit tests for all core functionality.
+- **chore:** Moved examples to CodeSandbox.
+- **chore:** Use Ramda.
+- **chore:** Use microbundle for bundling and distribution.
+- **chore:** Migrate from TSLint to ESLint
+
 ### 1.1.4
 
-- Added possibility to specify stdout/stderr callbacks when executing a command (in `exec()` function)
-- Added stdout/stderr output when promise for process is resolved
-- Only use `close` event (instead of both `close` and `exit`) in ChildProcess to determine status of process
+- Added possibility to specify stdout/stderr callbacks when executing a command (in `exec()` function).
+- Added stdout/stderr output when promise for process is resolved.
+- Only use `close` event (instead of both `close` and `exit`) in ChildProcess to determine status of process.
 
 ### 1.1.3
 
-- Upgraded to Babel 7 stable release
-- Updated dependencies
-- Added reference to git repo in package.json
+- Upgraded to Babel 7 stable release.
+- Updated dependencies.
+- Added reference to git repo in package.json.
 
 ### 1.1.2
 
@@ -193,13 +350,13 @@ Just remember to run the following beforehand:
 
 ### 1.1.1
 
-- Added support for class properties (Babel plugin)
+- Added support for class properties (Babel plugin).
 
 ### 1.1.0
 
-- Babel 7
-- Possibility to specify root dir for glob search patterns
-- Bunch of refactoring
+- Babel 7.
+- Possibility to specify root dir for glob search patterns.
+- Bunch of refactoring.
 
 ### 1.0.0
 
