@@ -4,23 +4,27 @@ import {
   IBuilderOptions,
   ICommand
 } from './api';
-import { Command } from './command';
-import { BuilderUtils } from './utils';
+import { IUtils } from './api/utils';
+import Command from './command';
+import utilFactory from './utils/factory';
 
 class Builder implements IBuilder {
   public commands: ICommand[];
   public options: IBuilderOptions;
 
-  constructor(options?: IBuilderOptions) {
+  private utils: IUtils;
+
+  public constructor(options?: IBuilderOptions, utils?: IUtils) {
+    this.utils = utils || utilFactory();
     this.commands = [];
-    this.options = BuilderUtils.parseOptions(options);
+    this.options = this.utils.builder.parseOptions(options);
   }
 
   public createCommand(
     command: string,
     filePatterns?: IArgumentFilePatterns[]
   ): ICommand {
-    const cmd = new Command(this.options, command, filePatterns);
+    const cmd = new Command(this.options, command, filePatterns, this.utils);
     this.commands.push(cmd);
     return cmd;
   }

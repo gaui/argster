@@ -1,24 +1,23 @@
-import { IBuilder, IBuilderOptions } from './builder';
+import { IBuilder } from './builder';
 import {
-  CommandArgumentInput,
   ICommand,
   ICommandArgument,
-  ICommandEvalValueInput,
   ICommandProcess,
-  ICommandProcessOutput
+  ICommandProcessOutput,
+  TCommandArgumentInput
 } from './command';
+import { IArgumentFileContents } from './misc';
 import {
-  IArgumentFileContents,
   IArgumentFilePatterns,
+  IBuilderOptions,
   IDynamicVariables
-} from './misc';
+} from './options';
 
 export {
   IBuilder,
-  CommandArgumentInput,
+  TCommandArgumentInput,
   ICommand,
   ICommandArgument,
-  ICommandEvalValueInput,
   ICommandProcess,
   ICommandProcessOutput,
   IDynamicVariables,

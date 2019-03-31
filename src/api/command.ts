@@ -1,15 +1,38 @@
-import { IArgumentFilePatterns } from './misc';
+import { IArgumentFilePatterns } from './options';
 
 /* tslint:disable:no-empty-interface */
 
 export interface ICommand {
+  /**
+   * Executes a command
+   * @param stdout Callback on STDOUT
+   * @param stderr Callback on STDERR
+   */
   exec(
-    stdout?: (chunk: any) => any,
-    stderr?: (chunk: any) => any
+    stdout?: (chunk: string) => string,
+    stderr?: (chunk: string) => string
   ): ICommandProcess;
-  prependArgument(argument: CommandArgumentInput): void;
-  appendArgument(argument: CommandArgumentInput): void;
+
+  /**
+   * Prepend an argument
+   * @param argument Argument
+   */
+  prependArgument(argument: TCommandArgumentInput): ICommand;
+
+  /**
+   * Append an argument
+   * @param argument Argument
+   */
+  appendArgument(argument: TCommandArgumentInput): ICommand;
+
+  /**
+   * Get the command string
+   */
   toString(): string;
+
+  /**
+   * Get the command string as an array
+   */
   toArray(): ReadonlyArray<string>;
 }
 
@@ -30,16 +53,11 @@ export interface ICommandProcess {
 export interface ICommandProcessOutput {
   code: number;
   signal: string;
-  stdout: any[];
-  stderr: any[];
+  stdout: string[];
+  stderr: string[];
 }
 
-export interface ICommandEvalValueInput<V, T> {
-  predicate: (val: V, injectedData?: any) => boolean;
-  replacer: (val: V, injectedData?: any) => T;
-}
-
-export type CommandArgumentInput =
+export type TCommandArgumentInput =
   | ICommandArgument
   | ICommandArgument[]
   | string

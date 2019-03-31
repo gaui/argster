@@ -2,7 +2,7 @@ class VariableUnresolvableException extends Error {
   public variable: string;
   public original: string;
   public argument: string;
-  constructor(obj: any) {
+  public constructor(obj: { [key: string]: string }) {
     super(obj.variable);
 
     this.variable = obj.variable;
@@ -10,7 +10,7 @@ class VariableUnresolvableException extends Error {
     this.argument = obj.argument;
   }
 
-  public toString() {
+  public toString(): string {
     return `Variable ${this.original} was not resolved`;
   }
 }
