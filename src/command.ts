@@ -20,7 +20,7 @@ class Command implements ICommand {
 
   private utils: IUtils;
 
-  constructor(
+  public constructor(
     builderOptions: IBuilderOptions,
     command: string,
     filePatterns?: IArgumentFilePatterns[],
@@ -41,8 +41,8 @@ class Command implements ICommand {
   }
 
   public exec(
-    stdout?: (chunk: any) => void,
-    stderr?: (chunk: any) => void
+    stdout?: (chunk: string) => void,
+    stderr?: (chunk: string) => void
   ): ICommandProcess {
     const cmd = exec(this.toString(), { shell: this.builderOptions.shell });
 
@@ -50,13 +50,13 @@ class Command implements ICommand {
     const stderrArray = this.createStdStream(cmd, 'stderr', stderr);
 
     const promise = new Promise<ICommandProcessOutput>((resolve, reject) => {
-      const successFn = (code: number, signal: string) => {
-        const output = {
+      const successFn = (code: number, signal: string): void => {
+        const output: ICommandProcessOutput = {
           code,
           signal,
           stderr: stderrArray,
           stdout: stdoutArray
-        } as ICommandProcessOutput;
+        };
 
         if (code === 0) {
           resolve(output);
@@ -65,7 +65,7 @@ class Command implements ICommand {
         }
       };
 
-      const errorFn = (err: any) => reject(err);
+      const errorFn = (err: any): void => reject(err);
 
       cmd.on('close', successFn);
       cmd.on('error', errorFn);
@@ -177,12 +177,13 @@ class Command implements ICommand {
   private createStdStream(
     cmd: ChildProcess,
     type: 'stdout' | 'stderr',
-    callback?: (chunk: any) => void
-  ) {
-    const array: any[] = [];
+    callback?: (chunk: string) => void
+  ): string[] {
+    const array: string[] = [];
 
-    if (cmd[type]) {
-      cmd[type]!.on('data', chunk => {
+    const command = cmd[type];
+    if (command) {
+      command.on('data', chunk => {
         if (callback) {
           callback(chunk);
         }

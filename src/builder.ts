@@ -14,7 +14,7 @@ class Builder implements IBuilder {
 
   private utils: IUtils;
 
-  constructor(options?: IBuilderOptions, utils?: IUtils) {
+  public constructor(options?: IBuilderOptions, utils?: IUtils) {
     this.utils = utils || utilFactory();
     this.commands = [];
     this.options = this.utils.builder.parseOptions(options);

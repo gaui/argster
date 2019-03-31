@@ -7,7 +7,7 @@ export default class FileUtils implements IFileUtils {
   private fsInstance: any;
   private globInstance: any;
 
-  constructor(fsInstance?: any, globInstance?: any) {
+  public constructor(fsInstance?: any, globInstance?: any) {
     this.fsInstance = fsInstance || fs;
     this.globInstance = globInstance || glob;
   }
@@ -32,7 +32,7 @@ export default class FileUtils implements IFileUtils {
   ): IArgumentFileContents[] {
     const newArray = [] as IArgumentFileContents[];
     argumentFilePatterns.forEach((argument: IArgumentFilePatterns) => {
-      const newArgument = {} as IArgumentFileContents;
+      const newArgument: IArgumentFileContents = ({} as unknown) as IArgumentFileContents;
       newArgument.files = argument;
       newArgument.contents = argument.patterns
         .map((file: string) => this.readFileAsArray(file))

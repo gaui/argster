@@ -39,7 +39,7 @@ export interface IBuilderOptions {
   shell?: string;
 
   // Transformers to run on each argument
-  transformers?: Array<ITransformer<any, any> | string>;
+  transformers?: (ITransformer<any, any> | string)[];
 }
 
 export type IConvertVariableOption =

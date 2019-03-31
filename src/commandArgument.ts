@@ -10,7 +10,7 @@ class CommandArgument implements ICommandArgument {
 
   private utils: IUtils;
 
-  constructor(
+  public constructor(
     builderOptions: IBuilderOptions,
     argument: string,
     prefix?: string,
@@ -24,7 +24,7 @@ class CommandArgument implements ICommandArgument {
     this.argument = newArgument ? newArgument.trim() : '';
   }
 
-  public toString() {
+  public toString(): string {
     const prefix = this.prefix ? this.prefix + ' ' : '';
     return `${prefix}${this.argument} `;
   }
@@ -54,9 +54,7 @@ class CommandArgument implements ICommandArgument {
     const transformerList = builderOptions.transformers.map(t =>
       typeof t === 'string' ? transformers.transformers[t] : t
     );
-    const resolvedValue = transformers.multiple<string | undefined, string>(
-      transformerList
-    )(argument);
+    const resolvedValue = transformers.multiple(transformerList)(argument);
 
     return resolvedValue;
   }
@@ -99,9 +97,10 @@ class CommandArgument implements ICommandArgument {
       return resolvedValue || '';
     };
 
+    if (!dynVarPattern) return argument;
     try {
       const arg = argument.replace(
-        new RegExp(dynVarPattern!, 'gim'),
+        new RegExp(dynVarPattern, 'gim'),
         replacerFn
       );
 

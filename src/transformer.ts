@@ -1,5 +1,9 @@
 import R from 'ramda';
-import { ITransformer, ITransformers } from './api/transformer';
+import {
+  ITransformer,
+  ITransformers,
+  ITransformerType
+} from './api/transformer';
 
 // Transformer is:
 // - a function which takes in some value, checks if predicate matches
@@ -21,37 +25,48 @@ const transformers: ITransformers = {
   }
 };
 
-const one = <V, T>(trans?: ITransformer<V, T>) => createTransformer(trans);
+const one = <V, T>(trans?: ITransformer<V, T>): ITransformerType<V, T> =>
+  createTransformer<V, T>(trans);
 
-const multiple = <V, T>(trans: Array<ITransformer<V, T>>) =>
+const multiple = <V, T>(trans: ITransformer<V, T>[]): ITransformerType<V, T> =>
   R.pipe.call(null, ...trans.map(t => createTransformer<V, T>(t)));
 
 const pattern = <V extends string, T>(
   regex: RegExp,
   trans?: ITransformer<V, T>
-) => (val: V) =>
+): ((val: V) => string) => (val: V) =>
   val.replace(new RegExp(regex, 'gim'), createTransformer<V, any>(trans));
 
 // Handling functions
 
-const createTransformer = <V, T>(trans?: ITransformer<V, T>): ((val: V) => T) =>
-  R.pipe(
+function createTransformer<V, T>(
+  trans?: ITransformer<V, T>
+): ITransformerType<V, T> {
+  return R.pipe(
     transformValue(getTransformer(trans)),
     getValue
   );
+}
 
-const getValue = <V>(val: V) => (val instanceof Function ? val() : val);
-const getTransformer = <V, T>(trans?: ITransformer<V, T>): ITransformer<V, T> =>
-  trans || transformers.default;
+function getValue<V>(val: V): V | (() => V) {
+  return val instanceof Function ? val() : val;
+}
 
-const transformValue = <V, T>(trans: ITransformer<V, T>) => (
-  val: V
-): Array<V | T> | (V | T) =>
-  Array.isArray(val)
-    ? val.map(transformSingle(trans))
-    : transformSingle<V, T>(trans)(val);
+function getTransformer<V, T>(trans?: ITransformer<V, T>): ITransformer<V, T> {
+  return trans || transformers.default;
+}
 
-const transformSingle = <V, T>(trans: ITransformer<V, T>) => (val: V): V | T =>
-  trans.predicate(val) ? trans.replacer(val) : val;
+function transformValue<V, T>(
+  trans: ITransformer<V, T>
+): (val: V) => V | T | (V | T)[] {
+  return (val: V) =>
+    Array.isArray(val)
+      ? val.map(transformSingle(trans))
+      : transformSingle<V, T>(trans)(val);
+}
+
+function transformSingle<V, T>(trans: ITransformer<V, T>): (val: V) => V | T {
+  return (val: V): V | T => (trans.predicate(val) ? trans.replacer(val) : val);
+}
 
 export { transformers, one, multiple, pattern };
