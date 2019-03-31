@@ -4,8 +4,8 @@ import { IArgumentFilePatterns } from './options';
 
 export interface ICommand {
   exec(
-    stdout?: (chunk: any) => any,
-    stderr?: (chunk: any) => any
+    stdout?: (chunk: string) => string,
+    stderr?: (chunk: string) => string
   ): ICommandProcess;
   prependArgument(argument: TCommandArgumentInput): ICommand;
   appendArgument(argument: TCommandArgumentInput): ICommand;
@@ -30,8 +30,8 @@ export interface ICommandProcess {
 export interface ICommandProcessOutput {
   code: number;
   signal: string;
-  stdout: any[];
-  stderr: any[];
+  stdout: string[];
+  stderr: string[];
 }
 
 export type TCommandArgumentInput =

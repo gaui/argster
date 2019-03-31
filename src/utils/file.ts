@@ -4,10 +4,10 @@ import { IArgumentFileContents, IArgumentFilePatterns } from '../api';
 import { IFileUtils } from '../api/utils/file';
 
 export default class FileUtils implements IFileUtils {
-  private fsInstance: any;
-  private globInstance: any;
+  private fsInstance: typeof fs;
+  private globInstance: typeof glob;
 
-  public constructor(fsInstance?: any, globInstance?: any) {
+  public constructor(fsInstance?: typeof fs, globInstance?: typeof glob) {
     this.fsInstance = fsInstance || fs;
     this.globInstance = globInstance || glob;
   }
@@ -49,7 +49,7 @@ export default class FileUtils implements IFileUtils {
     });
     const contentArray = content
       .split('\n')
-      .map((x: any) => x.trim())
+      .map((x: string) => x.trim())
       .filter(Boolean);
 
     return contentArray;

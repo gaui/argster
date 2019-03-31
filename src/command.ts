@@ -65,7 +65,7 @@ class Command implements ICommand {
         }
       };
 
-      const errorFn = (err: any): void => reject(err);
+      const errorFn = (err: string): void => reject(err);
 
       cmd.on('close', successFn);
       cmd.on('error', errorFn);
@@ -96,12 +96,12 @@ class Command implements ICommand {
   }
 
   public toArray(): ReadonlyArray<string> {
-    const initArray: any = ([[]] as any).concat(this.arguments);
+    const initArray: ICommandArgument[] = ([] as ICommandArgument[]).concat(
+      this.arguments
+    );
     const argArray = initArray
       .map((arg: ICommandArgument) => [arg.prefix, arg.argument])
-      .reduce((prev: ICommandArgument[], cur: ICommandArgument[]) =>
-        prev.concat(cur)
-      )
+      .reduce((prev, cur) => prev.concat(cur))
       .filter(Boolean) as ReadonlyArray<string>;
 
     return argArray;

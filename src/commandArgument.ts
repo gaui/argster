@@ -70,7 +70,7 @@ class CommandArgument implements ICommandArgument {
     const dynVariables = builderOptions.dynamicVariables;
     const dynVarPattern = builderOptions.variablePattern;
 
-    const replacerFn = (match: any, actualValue: any): string => {
+    const replacerFn = (match: string, actualValue: string): string => {
       const resolvedValue = transformers.one(transformers.transformers.raw)(
         dynVariables[actualValue]
       );

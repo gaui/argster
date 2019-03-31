@@ -1,5 +1,5 @@
-export interface ITransformers {
-  [key: string]: ITransformer<any, any>;
+export interface ITransformers<V, T> {
+  [key: string]: ITransformer<V, T>;
 }
 
 export interface ITransformer<V, T> {

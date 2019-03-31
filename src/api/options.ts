@@ -39,7 +39,7 @@ export interface IBuilderOptions {
   shell?: string;
 
   // Transformers to run on each argument
-  transformers?: (ITransformer<any, any> | string)[];
+  transformers?: (ITransformer<string, string> | string)[];
 }
 
 export type IConvertVariableOption =
@@ -53,7 +53,7 @@ export type IConvertVariableOption =
     ];
 
 export interface IDynamicVariables {
-  [key: string]: any | (() => any);
+  [key: string]: unknown | (() => unknown);
 }
 
 export interface IArgumentFilePatterns {
