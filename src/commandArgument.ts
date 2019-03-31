@@ -2,7 +2,7 @@ import { IBuilderOptions, ICommandArgument } from './api';
 import { IUtils } from './api/utils';
 import { VariableUnresolvableException } from './exceptions';
 import * as transformers from './transformer';
-import { factory as utilFactory } from './utils';
+import utilFactory from './utils/factory';
 
 class CommandArgument implements ICommandArgument {
   public argument: string;
