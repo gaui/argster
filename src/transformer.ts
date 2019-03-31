@@ -1,4 +1,4 @@
-import R from 'ramda';
+import { pipe } from 'ramda';
 import { ITransformer, ITransformerType } from './api/transformer';
 
 // Transformer is:
@@ -25,7 +25,7 @@ const one = <V, T>(trans: ITransformer<V, T>): ITransformerType<V, T> =>
   createTransformer<V, T>(trans);
 
 const multiple = <V, T>(trans: ITransformer<V, T>[]): ITransformerType<V, T> =>
-  R.pipe.call(null, ...trans.map(t => createTransformer<V, T>(t)));
+  pipe.call(null, ...trans.map(t => createTransformer<V, T>(t)));
 
 const pattern = <V, T>(
   regex: RegExp,
@@ -44,7 +44,7 @@ function createTransformer<V, T>(
 ): ITransformerType<V, T> {
   const transformer = getTransformer(trans);
   const transformedValue = transformValue(transformer);
-  return R.pipe(
+  return pipe(
     transformedValue,
     getValue
   );
