@@ -1,6 +1,6 @@
 # argster
 
-Just a simple command/argument manager with a simple API that makes it easy to build commands and arguments.
+A simple command/argument manager with a simple API that makes it easy to build commands and arguments.
 
 ## Usage
 
