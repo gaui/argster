@@ -318,7 +318,7 @@ Just remember to run the following beforehand:
 
 ## Changelog
 
-### 1.2.0
+### 1.2.1
 
 - **feat:** Added the option to convert platform specific variables with the [`convertVariables` option](#convertVariables).
 - **feat:** Added the option to ignore lines based on a RegExp pattern with the [`lineIgnorePattern` option](#lineIgnorePattern), e.g. comment lines starting with `#` or `//`
