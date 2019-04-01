@@ -318,6 +318,10 @@ Just remember to run the following beforehand:
 
 ## Changelog
 
+### 1.2.2
+
+- **fix:** Wrong import for `glob` module.
+
 ### 1.2.1
 
 - **feat:** Added the option to convert platform specific variables with the [`convertVariables` option](#convertVariables).

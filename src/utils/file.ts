@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as glob from 'glob';
+import fs from 'fs';
+import glob from 'glob';
 import { IArgumentFileContents, IArgumentFilePatterns } from '../api';
 import { IFileUtils } from '../api/utils/file';
 
