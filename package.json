@@ -1,6 +1,6 @@
 {
   "name": "argster",
-  "version": "1.1.4",
+  "version": "1.2.1",
   "description": "A simple command/argument manager",
   "main": "lib/index.js",
   "umd:main": "lib/index.umd.js",
