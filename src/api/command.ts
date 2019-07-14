@@ -1,7 +1,5 @@
 import { IArgumentFilePatterns } from './options';
 
-/* tslint:disable:no-empty-interface */
-
 export interface ICommand {
   /**
    * Executes a command

@@ -1,8 +1,6 @@
 import { ICommand } from './command';
 import { IArgumentFilePatterns, IBuilderOptions } from './options';
 
-/* tslint:disable:no-empty-interface */
-
 export interface IBuilder {
   options: IBuilderOptions;
   /**
