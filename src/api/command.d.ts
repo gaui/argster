@@ -1,6 +1,4 @@
-import { IArgumentFilePatterns } from './options';
-
-export interface ICommand {
+interface ICommand {
   /**
    * Executes a command
    * @param stdout Callback on STDOUT
@@ -34,28 +32,28 @@ export interface ICommand {
   toArray(): readonly string[];
 }
 
-export interface ICommandArgument {
+interface ICommandArgument {
   argument: string;
   prefix?: string;
 }
 
-export interface ICommandOptions {
+interface ICommandOptions {
   filePatterns: IArgumentFilePatterns[];
 }
 
-export interface ICommandProcess {
+interface ICommandProcess {
   command: string;
   promise: Promise<ICommandProcessOutput>;
 }
 
-export interface ICommandProcessOutput {
+interface ICommandProcessOutput {
   code: number;
   signal: string;
   stdout: string[];
   stderr: string[];
 }
 
-export type TCommandArgumentInput =
+type TCommandArgumentInput =
   | ICommandArgument
   | ICommandArgument[]
   | string

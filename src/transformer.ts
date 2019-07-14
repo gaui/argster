@@ -1,5 +1,4 @@
 import { pipe } from 'ramda';
-import { ITransformer, ITransformerType } from './api/transformer';
 
 // Transformer is:
 // - a function which takes in some value, checks if predicate matches

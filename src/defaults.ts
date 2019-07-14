@@ -1,5 +1,3 @@
-import { IBuilderOptions } from './api/options';
-
 export const defaultOptions: IBuilderOptions = {
   rootDir: process.cwd(),
   dynamicVariables: {},

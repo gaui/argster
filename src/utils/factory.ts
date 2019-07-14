@@ -1,4 +1,3 @@
-import { IUtils, IUtilsParam } from 'src/api/utils';
 import { BuilderUtils, CommandUtils, FileUtils, LogUtils } from '.';
 
 const factory = (utils?: IUtilsParam): IUtils => ({

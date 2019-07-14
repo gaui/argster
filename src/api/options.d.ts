@@ -1,6 +1,4 @@
-import { ITransformer } from './transformer';
-
-export interface IBuilderOptions {
+interface IBuilderOptions {
   // Root dir to resolve all paths from
   // default: process.cwd()
   rootDir?: string;
@@ -42,7 +40,7 @@ export interface IBuilderOptions {
   transformers?: (ITransformer<string, string> | string)[];
 }
 
-export type IConvertVariableOption =
+type IConvertVariableOption =
   | false
   | [
       true,
@@ -52,11 +50,11 @@ export type IConvertVariableOption =
       }
     ];
 
-export interface IDynamicVariables {
+interface IDynamicVariables {
   [key: string]: string | (() => string);
 }
 
-export interface IArgumentFilePatterns {
+interface IArgumentFilePatterns {
   prefix: string;
   patterns: string[];
 }

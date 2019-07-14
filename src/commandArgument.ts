@@ -1,5 +1,3 @@
-import { IBuilderOptions, ICommandArgument } from './api';
-import { IUtils } from './api/utils';
 import { VariableUnresolvableException } from './exceptions';
 import * as transformers from './transformer';
 import utilFactory from './utils/factory';

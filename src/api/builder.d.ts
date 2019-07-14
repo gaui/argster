@@ -1,7 +1,4 @@
-import { ICommand } from './command';
-import { IArgumentFilePatterns, IBuilderOptions } from './options';
-
-export interface IBuilder {
+interface IBuilder {
   options: IBuilderOptions;
   /**
    * Create a new command and register it in the builder

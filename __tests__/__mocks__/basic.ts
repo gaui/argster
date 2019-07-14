@@ -1,6 +1,4 @@
-import { Builder, IBuilderOptions } from '../../src';
-import { IUtilsParam } from '../../src/api/utils';
-import { ILogUtils } from '../../src/api/utils/log';
+import { Builder } from '../../src';
 import utilFactory from '../../src/utils/factory';
 
 export const fs = (str: string): typeof import('fs') => {
