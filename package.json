@@ -16,7 +16,8 @@
   "scripts": {
     "build": "microbundle --target node",
     "prepublishOnly": "yarn build",
-    "test": "jest",
+    "test": "jest -i --watch",
+    "test:ci": "jest -i --coverage",
     "dts": "tsc --emitDeclarationOnly",
     "lint": "eslint --ext .ts src __tests__",
     "format": "prettier \"./{src,__tests__}/**/*.{js,jsx,ts,tsx,json,md}\" --write",
