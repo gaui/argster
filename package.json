@@ -14,7 +14,7 @@
     "url": "https://github.com/gaui/argster.git"
   },
   "scripts": {
-    "build": "microbundle --target node --external child_process,events,assert,util",
+    "build": "microbundle --target node",
     "prepublishOnly": "yarn build",
     "test": "jest",
     "dts": "tsc --emitDeclarationOnly",
@@ -46,7 +46,7 @@
     "eslint-config-prettier": "6.0.0",
     "eslint-plugin-prettier": "3.1.0",
     "jest": "24.8.0",
-    "microbundle": "0.11.0",
+    "microbundle": "0.12.0-next.3",
     "prettier": "1.18.2",
     "ts-jest": "24.0.2",
     "typescript": "3.5.3"
