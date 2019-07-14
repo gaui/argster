@@ -48,7 +48,7 @@
     "jest": "24.5.0",
     "microbundle": "0.11.0",
     "np": "4.0.2",
-    "prettier": "1.16.4",
+    "prettier": "1.18.2",
     "ts-jest": "24.0.1",
     "ts-node": "8.0.3",
     "typescript": "3.4.1"
