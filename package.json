@@ -20,7 +20,8 @@
     "dts": "tsc --emitDeclarationOnly",
     "lint": "eslint --ext .ts src __tests__ examples",
     "format": "prettier \"./{src,__tests__,examples}/**/*.{js,jsx,ts,tsx,json,md}\" --write",
-    "typecheck": "tsc --noEmit --pretty --skipLibCheck"
+    "typecheck": "tsc --noEmit --pretty --skipLibCheck",
+    "vuln": "yarn audit --level high --no-progress --non-interactive --frozen-lockfile"
   },
   "engines": {
     "node": "12.4.0"
