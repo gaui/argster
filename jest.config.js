@@ -7,33 +7,24 @@ module.exports = {
 
   // A set of global variables that need to be available in all test environments
   globals: {
-    "babel-jest": {
-      "babelrcFile": ".babelrc"
+    'babel-jest': {
+      babelrcFile: '.babelrc'
     }
   },
 
   // An array of file extensions your modules use
-  moduleFileExtensions: [
-    "ts",
-    "tsx",
-    "js"
-  ],
+  moduleFileExtensions: ['ts', 'tsx', 'js'],
 
   // The test environment that will be used for testing
-  testEnvironment: "node",
+  testEnvironment: 'node',
 
   // The glob patterns Jest uses to detect test files
-  testMatch: [
-    "**/__tests__/**/*.+(ts|tsx|js)"
-  ],
+  testMatch: ['**/__tests__/**/*.+(ts|tsx|js)'],
 
-  testPathIgnorePatterns: [
-    "/node_modules/",
-    "/__mocks__/"
-  ],
+  testPathIgnorePatterns: ['/node_modules/', '/__mocks__/'],
 
   // A map from regular expressions to paths to transformers
   transform: {
-    "^.+\\.(ts|tsx)$": "ts-jest"
+    '^.+\\.(ts|tsx)$': 'ts-jest'
   }
 };
