@@ -318,6 +318,11 @@ Just remember to run the following beforehand:
 
 ## Changelog
 
+### 1.2.3
+
+- **chore:** Pin all dependencies to fixed SemVer.
+- **chore:** Upgrade various dependencies to latest version, e.g. Babel, TypeScript + Jest
+
 ### 1.2.2
 
 - **fix:** Wrong import for `glob` module.
