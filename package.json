@@ -22,6 +22,9 @@
     "format": "prettier \"./{src,__tests__,examples}/**/*.{js,jsx,ts,tsx,json,md}\" --write",
     "typecheck": "tsc --noEmit --pretty --skipLibCheck"
   },
+  "engines": {
+    "node": "12.4.0"
+  },
   "dependencies": {
     "glob": "^7.1.4",
     "ramda": "^0.26.1"
