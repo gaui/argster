@@ -33,7 +33,7 @@ export interface ICommand {
   /**
    * Get the command string as an array
    */
-  toArray(): ReadonlyArray<string>;
+  toArray(): readonly string[];
 }
 
 export interface ICommandArgument {

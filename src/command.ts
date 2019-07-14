@@ -95,14 +95,14 @@ class Command implements ICommand {
     return this;
   }
 
-  public toArray(): ReadonlyArray<string> {
+  public toArray(): readonly string[] {
     const initArray: ICommandArgument[] = ([] as ICommandArgument[]).concat(
       this.arguments
     );
     const argArray = initArray
       .map((arg: ICommandArgument) => [arg.prefix, arg.argument])
       .reduce((prev, cur) => prev.concat(cur))
-      .filter(Boolean) as ReadonlyArray<string>;
+      .filter(Boolean) as readonly string[];
 
     return argArray;
   }
