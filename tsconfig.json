@@ -8,7 +8,7 @@
     "declaration": true,
     "jsx": "react",
     "moduleResolution": "node",
-    "rootDir": "src",
+    "rootDir": ".",
     "outDir": "lib",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -18,7 +18,7 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
   },
   "include": [
     "src/**/*",
