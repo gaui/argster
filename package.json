@@ -14,43 +14,44 @@
     "url": "https://github.com/gaui/argster.git"
   },
   "scripts": {
-    "build": "microbundle --target node --external child_process,events,assert,util",
+    "build": "microbundle --target node",
     "prepublishOnly": "yarn build",
-    "test": "jest",
+    "test": "jest -i",
+    "test:ci": "jest -i --coverage",
     "dts": "tsc --emitDeclarationOnly",
-    "lint": "eslint --ext .ts src __tests__ examples",
-    "format": "prettier \"./{src,__tests__,examples}/**/*.{js,jsx,ts,tsx,json,md}\" --write",
-    "typecheck": "tsc --noEmit --pretty --skipLibCheck"
+    "lint": "eslint --ext .ts src __tests__",
+    "format": "prettier \"./{src,__tests__}/**/*.{js,jsx,ts,tsx,json,md}\" --write",
+    "typecheck": "tsc --noEmit --pretty --skipLibCheck",
+    "vuln": "yarn audit --level high --no-progress --non-interactive --frozen-lockfile"
+  },
+  "engines": {
+    "node": "12.4.0"
   },
   "dependencies": {
-    "glob": "^7.1.3",
+    "glob": "^7.1.4",
     "ramda": "^0.26.1"
   },
   "browser": {
     "fs": false
   },
   "devDependencies": {
-    "@babel/cli": "^7.2.3",
-    "@babel/core": "^7.4.0",
-    "@babel/plugin-proposal-class-properties": "^7.4.0",
-    "@babel/plugin-transform-modules-commonjs": "^7.4.0",
-    "@babel/preset-env": "^7.4.2",
-    "@babel/preset-typescript": "^7.3.3",
-    "@types/glob": "^7.1.1",
-    "@types/jest": "^24.0.11",
-    "@types/node": "^11.12.2",
-    "@types/ramda": "^0.26.5",
-    "@typescript-eslint/eslint-plugin": "^1.5.0",
-    "@typescript-eslint/parser": "^1.5.0",
-    "eslint": "^5.16.0",
-    "eslint-config-prettier": "^4.1.0",
-    "eslint-plugin-prettier": "^3.0.1",
-    "jest": "^24.5.0",
-    "microbundle": "^0.11.0",
-    "np": "^4.0.2",
-    "prettier": "^1.16.4",
-    "ts-jest": "^24.0.1",
-    "ts-node": "^8.0.3",
-    "typescript": "^3.4.1"
+    "@babel/cli": "7.5.0",
+    "@babel/core": "7.5.4",
+    "@babel/plugin-proposal-class-properties": "7.5.0",
+    "@babel/preset-env": "7.5.4",
+    "@babel/preset-typescript": "7.3.3",
+    "@types/glob": "7.1.1",
+    "@types/jest": "24.0.15",
+    "@types/node": "12.6.2",
+    "@types/ramda": "0.26.15",
+    "@typescript-eslint/eslint-plugin": "1.12.0",
+    "@typescript-eslint/parser": "1.12.0",
+    "eslint": "6.0.1",
+    "eslint-config-prettier": "6.0.0",
+    "eslint-plugin-prettier": "3.1.0",
+    "jest": "24.8.0",
+    "microbundle": "0.12.0-next.3",
+    "prettier": "1.18.2",
+    "typescript": "3.5.3"
   }
 }

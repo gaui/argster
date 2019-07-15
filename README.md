@@ -1,10 +1,94 @@
 # argster
 
-A simple command/argument manager with a simple API that makes it easy to build commands and arguments.
+A simple command/argument manager with a simple API that makes it easy to build dynamic commands and dynamic arguments with computed values.
 
-## Examples
+## What
 
-Check out this [CodeSandbox](https://codesandbox.io/s/lyjjqzv38q).
+The [Builder's](#builder) builds and manages commands. When a new `Builder` instance is created, it provides an simple API to create and execute commands, append and prepend dynamic arguments.
+
+When creating [commands](#command) through the builder, it goes through the list of file patterns recursively, reads each file, parses each line in the file, resolves dynamic variables to their values, and generates an executable command string. When a command is executed, it returns an object which contains both a _promise_ which is resolved or rejected based on how the process exits (0 / 1), along with a [Readable](https://nodejs.org/api/stream.html#stream_readable_streams) streams object for listening to stdout and stderr streams.
+
+So instead of manually creating the following command in our CI pipeline, with dynamic arguments and dynamic values that need to be computed at runtime:
+
+```bash
+docker build . -t myimage:1.0.0 --label org.label-schema.build-date=2019-07-14 --label org.label-schema.name=argster-120-example --label org.label-schema.vendor=Vendor --label org.label-schema.version=1.0.0 --label org.label-schema.schema-version=1.0.0-rc.1
+```
+
+You could create a simple JavaScript script and create complex commands with dynamic arguments (evaluated JavaScript functions) and version control it all with Git.
+
+### Example (docker build)
+
+Pay special attention to the `org.label-schema.build-date` label with the dynamic date.
+
+**1. If we created the following builder and command**
+
+```typescript
+const options = {
+  dynamicVariables: {
+    BUILD_DATE: () => new Date().toISOString().slice(0, 10),
+    NAME: () => pkg.name,
+    VERSION: () => pkg.version,
+    DESCRIPTION: () => pkg.description,
+    VENDOR: () => "Vendor",
+    SCHEMA_VERSION: () => "1.0.0-rc.1"
+  },
+  skipUnresolvedVariables: true
+};
+
+const builder = new Builder(options);
+
+const cmd = builder.createCommand('docker build .', [
+  {
+    patterns: ['**/*.lbl'],
+    prefix: '--label'
+  }
+]);
+
+cmd.prependArgument({
+  argument: `myimage:${pkg.version}`,
+  prefix: '-t'
+});
+
+command.exec();
+```
+
+**2. And had this pattern file**
+
+**`./some/deep/path/file.lbl`**
+
+```ini
+org.label-schema.build-date=${BUILD_DATE}
+org.label-schema.name=${NAME}
+org.label-schema.description=${DESCRIPTION}
+org.label-schema.vendor=${VENDOR}
+org.label-schema.version=${VERSION}
+org.label-schema.schema-version=${SCHEMA_VERSION}
+```
+
+**3. This will be the executed command:**
+
+```bash
+docker build . -t myimage:1.0.0 --label org.label-schema.build-date=2019-07-14 --label org.label-schema.name=argster-120-example --label org.label-schema.vendor=Vendor --label org.label-schema.version=1.0.0 --label org.label-schema.schema-version=1.0.0-rc.1
+```
+
+## Why
+
+I always felt the lack of a tool/library to easily create dynamic commands with dynamic arguments that were derived by functions but had the possibility to version control, without creating complex shell scripts. It first started when I was experimenting with DevOps and started to work with Docker trying to create sane images. I started reading about best practices around labeling and tagging Docker images and stumbled up on [Label Schema](http://label-schema.org/rc1/#label-semantics).
+
+I sat down and thought about the following technologies:
+
+- Label Schema and label semantics for e.g. Docker images
+- Dockerfile and `ENV` / `ARG`
+- Dockerfile and `.env` file
+- Power of JavaScript
+- Power of variables
+- Power of Git
+
+With the great tech above I wanted to utilise it all and create a Node library that was able to build up complex dynamic command-line commands and arguments. Then the idea of **argster** was born.
+
+Check out this [CodeSandbox](https://codesandbox.io/s/lyjjqzv38q) for examples.
+
+Checkout the [roadmap](#roadmap) for what to come.
 
 ## Setup
 
@@ -56,59 +140,6 @@ read and each line assembled into a command string, which is then executed.
 All files matching the glob pattern `**/*.arg` and `**/*.lbl` would be read and a command generated from those arguments.
 
 When the command arguments are evaluated, a finalized command string is generated from those file contents.
-
-To explain...
-
-#### 1. If we created the following builder/command
-
-```typescript
-const extensions = [
-  {
-    prefix: '--build-arg',
-    patterns: ['**/*.arg']
-  },
-  {
-    prefix: '--label',
-    patterns: ['**/*.lbl']
-  }
-];
-
-const options = {
-  dynamicVariables: {
-    BUILD_DATE: () => new Date().toISOString().slice(0, 10)
-  }
-};
-
-const builder = new Builder(options);
-const command = builder.createCommand('docker build .', extensions);
-command.exec();
-```
-
-#### 2. And had these pattern files
-
-**`./foo/file.arg`**
-
-```ini
-VAR1=VAL1
-VAR2=VAL2
-VAR3=VAL3
-```
-
-**`./foo/bar/file.lbl`**
-
-```ini
-org.label-schema.build-date=${BUILD_DATE}
-org.label-schema.name=MyProject
-```
-
-#### 3. This would be the generated command that would be executed
-
-
-```bash
-docker build . --build-arg VAR1=VAL1 --build-arg VAR2=VAL2 --build-arg VAR3=VAL3 --label org.label-schema.build-date=2018-08-03 --label org.label-schema.name=MyProject
-```
-
-Take a look at how the `${BUILD_DATE}` argument now has the actual date. This is based on the dynamic variable we specified in the builder options above.
 
 ### Builder Options
 
@@ -287,14 +318,10 @@ toString(): string;
 toArray(): ReadonlyArray<string>;
 ```
 
-## How it works
-
-The [Builder's](#builder) responsibility is to build and manage commands. When a new `Builder` instance is created, it provides a API to create commands.
-
-When creating [commands](#command) through the builder, it goes through the list of file patterns recursively, reads each file, parses each line in the file, resolves dynamic variables to their values, and generates a executable command string. When a command is executed, it returns an object which contains both a _promise_ which is resolved or rejected based on how the process exits, along with a [Readable](https://nodejs.org/api/stream.html#stream_readable_streams) streams object for listening to stdout and stderr streams.
-
 ## Roadmap
 
+- Set up automated TypeScript documentation for APIs
+- Follow [Conventional Commits](https://www.conventionalcommits.org)
 - Set up CI to run automated tests
 - Plugin / Middleware architecture
   - Ability to hook into events
@@ -315,53 +342,3 @@ Just remember to run the following beforehand:
 - `yarn typecheck`
 - `yarn format`
 - `yarn lint`
-
-## Changelog
-
-### 1.2.2
-
-- **fix:** Wrong import for `glob` module.
-
-### 1.2.1
-
-- **feat:** Added the option to convert platform specific variables with the [`convertVariables` option](#convertVariables).
-- **feat:** Added the option to ignore lines based on a RegExp pattern with the [`lineIgnorePattern` option](#lineIgnorePattern), e.g. comment lines starting with `#` or `//`
-- **feat:** Dynamic Variables can now be [primitive values instead of only functions](#dynamicVariables).
-- **feat:** Now possible to chain `prependArgument()` and `appendArgument()` functions on  `ICommand`.
-- **feat:** New option `throwUnresolvedVariables` that throws an exception and stops the process when handling variables that cannot be resolved.
-- **fix:** Empty arguments resulted in the string `undefined`.
-- **chore:** Unit tests for all core functionality.
-- **chore:** Moved examples to CodeSandbox.
-- **chore:** Use Ramda.
-- **chore:** Use microbundle for bundling and distribution.
-- **chore:** Migrate from TSLint to ESLint
-
-### 1.1.4
-
-- Added possibility to specify stdout/stderr callbacks when executing a command (in `exec()` function).
-- Added stdout/stderr output when promise for process is resolved.
-- Only use `close` event (instead of both `close` and `exit`) in ChildProcess to determine status of process.
-
-### 1.1.3
-
-- Upgraded to Babel 7 stable release.
-- Updated dependencies.
-- Added reference to git repo in package.json.
-
-### 1.1.2
-
-- Added option for specifying which shell to use for executing commands. Default is `/bin/bash`
-
-### 1.1.1
-
-- Added support for class properties (Babel plugin).
-
-### 1.1.0
-
-- Babel 7.
-- Possibility to specify root dir for glob search patterns.
-- Bunch of refactoring.
-
-### 1.0.0
-
-First release.

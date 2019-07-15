@@ -1,3 +1,3 @@
-export interface ILogUtils {
+interface ILogUtils {
   warn(message?: string, ...optionalParams: string[]): void;
 }

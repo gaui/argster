@@ -1,10 +1,3 @@
-import {
-  IArgumentFilePatterns,
-  IBuilder,
-  IBuilderOptions,
-  ICommand
-} from './api';
-import { IUtils } from './api/utils';
 import Command from './command';
 import utilFactory from './utils/factory';
 

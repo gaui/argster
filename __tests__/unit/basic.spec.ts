@@ -80,6 +80,28 @@ describe('creating commands', () => {
     );
   });
 
+  test('it should return a command array with arguments appended and prepended in right order (FP style)', () => {
+    const builder = mock.createBuilder();
+    const cmd = builder.createCommand('foo');
+    cmd
+      .appendArgument('append3')
+      .appendArgument('append1')
+      .prependArgument('prepend1')
+      .appendArgument('append2')
+      .prependArgument('prepend2')
+      .prependArgument('prepend3');
+
+    expect(cmd.toArray()).toStrictEqual([
+      'foo',
+      'prepend3',
+      'prepend2',
+      'prepend1',
+      'append3',
+      'append1',
+      'append2'
+    ]);
+  });
+
   test('it should resolve dynamic variable', () => {
     const fs = mock.fs('FOO=${BAR}');
     const utils = {

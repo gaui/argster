@@ -1,6 +1,4 @@
-import { IArgumentFileContents, IArgumentFilePatterns } from '..';
-
-export interface IFileUtils {
+interface IFileUtils {
   computeFiles(
     argumentFilePatterns: IArgumentFilePatterns[],
     rootDir: string

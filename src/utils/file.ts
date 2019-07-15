@@ -1,7 +1,5 @@
 import fs from 'fs';
 import glob from 'glob';
-import { IArgumentFileContents, IArgumentFilePatterns } from '../api';
-import { IFileUtils } from '../api/utils/file';
 
 export default class FileUtils implements IFileUtils {
   private fsInstance: typeof fs;

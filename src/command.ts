@@ -1,14 +1,4 @@
 import { exec, ChildProcess } from 'child_process';
-import {
-  IArgumentFileContents,
-  IArgumentFilePatterns,
-  IBuilderOptions,
-  ICommand,
-  ICommandArgument,
-  ICommandProcess,
-  ICommandProcessOutput
-} from './api';
-import { IUtils } from './api/utils';
 import CommandArgument from './commandArgument';
 import utilFactory from './utils/factory';
 
@@ -49,7 +39,9 @@ class Command implements ICommand {
     const stdoutArray = this.createStdStream(cmd, 'stdout', stdout);
     const stderrArray = this.createStdStream(cmd, 'stderr', stderr);
 
-    const promise = new Promise<ICommandProcessOutput>((resolve, reject) => {
+    const promise: Promise<ICommandProcessOutput> = new Promise<
+      ICommandProcessOutput
+    >((resolve, reject): void => {
       const successFn = (code: number, signal: string): void => {
         const output: ICommandProcessOutput = {
           code,
@@ -80,7 +72,7 @@ class Command implements ICommand {
   }
 
   public prependArgument(argument: ICommandArgument): ICommand {
-    this.argumentHelper(argument, (arg: ICommandArgument) => {
+    this.argumentHelper(argument, (arg: ICommandArgument): void => {
       this.arguments.unshift(arg);
     });
 
@@ -88,32 +80,32 @@ class Command implements ICommand {
   }
 
   public appendArgument(argument: ICommandArgument): ICommand {
-    this.argumentHelper(argument, (arg: ICommandArgument) => {
+    this.argumentHelper(argument, (arg: ICommandArgument): void => {
       this.arguments.push(arg);
     });
 
     return this;
   }
 
-  public toArray(): ReadonlyArray<string> {
-    const initArray: ICommandArgument[] = ([] as ICommandArgument[]).concat(
-      this.arguments
-    );
-    const argArray = initArray
-      .map((arg: ICommandArgument) => [arg.prefix, arg.argument])
-      .reduce((prev, cur) => prev.concat(cur))
-      .filter(Boolean) as ReadonlyArray<string>;
+  public toArray(): readonly string[] {
+    const argArray = [...this.arguments]
+      .reduce(
+        (prev, cur): (string | undefined)[] =>
+          prev.concat(cur.prefix, cur.argument),
+        [] as (string | undefined)[]
+      )
+      .filter(Boolean) as readonly string[];
 
-    return argArray;
+    return [this.command].concat(argArray);
   }
 
   public toString(): string {
-    const argString = this.arguments
-      .map((arg: ICommandArgument) => arg.toString())
+    const argString = [this.command.concat(' '), ...this.arguments]
+      .map((arg: ICommandArgument): string => arg.toString())
       .join('')
       .trim();
 
-    return `${this.command}${argString ? ' ' + argString : ''}`;
+    return argString;
   }
 
   private createArgument(
