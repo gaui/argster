@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.1
+
+Just a minor update to address a [security vulnerability](https://nvd.nist.gov/vuln/detail/CVE-2019-1010266) in lodash. Along with updating some dependencies.
+
+- **chore:** Update Node to v12.7.0
+- **chore:** Update ESLint to v6.1.0
+- **chore:** Update Babel to v7.5.5
+- **chore:** Update lodash from 4.17.10 to 4.17.15 because of a [security vulnerability](https://nvd.nist.gov/vuln/detail/CVE-2019-1010266).
+
 ## 1.3.0
 
 - **refactor:** Use `.d.ts` files instead of exporting/importing types/interfaces.
