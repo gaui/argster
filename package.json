@@ -50,7 +50,7 @@
     "eslint-config-prettier": "6.0.0",
     "eslint-plugin-prettier": "3.1.0",
     "jest": "24.9.0",
-    "microbundle": "0.12.0-next.3",
+    "microbundle": "0.12.0-next.4",
     "prettier": "1.18.2",
     "typescript": "3.5.3"
   }
