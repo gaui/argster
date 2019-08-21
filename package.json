@@ -25,7 +25,7 @@
     "vuln": "yarn audit --level high --no-progress --non-interactive --frozen-lockfile"
   },
   "engines": {
-    "node": "12.7.0"
+    "node": "12.9.0"
   },
   "dependencies": {
     "glob": "^7.1.4",
@@ -42,7 +42,7 @@
     "@babel/preset-typescript": "7.3.3",
     "@types/glob": "7.1.1",
     "@types/jest": "24.0.18",
-    "@types/node": "12.6.8",
+    "@types/node": "12.7.2",
     "@types/ramda": "0.26.18",
     "@typescript-eslint/eslint-plugin": "1.13.0",
     "@typescript-eslint/parser": "1.13.0",
