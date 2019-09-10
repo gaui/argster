@@ -52,6 +52,6 @@
     "jest": "24.9.0",
     "microbundle": "0.12.0-next.6",
     "prettier": "1.18.2",
-    "typescript": "3.6.2"
+    "typescript": "3.6.3"
   }
 }
