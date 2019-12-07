@@ -35,11 +35,11 @@
     "fs": false
   },
   "devDependencies": {
-    "@babel/cli": "7.7.0",
-    "@babel/core": "7.7.2",
-    "@babel/plugin-proposal-class-properties": "7.7.0",
-    "@babel/preset-env": "7.7.1",
-    "@babel/preset-typescript": "7.7.2",
+    "@babel/cli": "7.7.5",
+    "@babel/core": "7.7.5",
+    "@babel/plugin-proposal-class-properties": "7.7.4",
+    "@babel/preset-env": "7.7.6",
+    "@babel/preset-typescript": "7.7.4",
     "@types/glob": "7.1.1",
     "@types/jest": "24.0.23",
     "@types/node": "12.12.14",
