@@ -1,5 +1,19 @@
 {
+  "enabled": true,
   "extends": [
-    "config:base"
-  ]
+      "config:base"
+  ],
+  "lockFileMaintenance": { "enabled": true },
+  "labels": ["dependencies"],
+  "semanticCommits": true,
+  "packageRules": [
+    {
+      "updateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+      },
+    {
+      "updateTypes": ["major"],
+      "automerge": false
+      }
+    ]
 }
