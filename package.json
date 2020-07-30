@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "glob": "^7.1.4",
-    "ramda": "^0.26.1"
+    "ramda": "^0.27.0"
   },
   "browser": {
     "fs": false
@@ -43,7 +43,7 @@
     "@types/glob": "7.1.1",
     "@types/jest": "24.0.24",
     "@types/node": "12.12.42",
-    "@types/ramda": "0.26.38",
+    "@types/ramda": "0.27.14",
     "@typescript-eslint/eslint-plugin": "3.0.2",
     "@typescript-eslint/parser": "3.0.2",
     "eslint": "6.8.0",
