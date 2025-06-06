@@ -295,6 +295,8 @@ exec(
   stderr?: (chunk: string) => void
 ): ICommandProcess;
 
+The `stdout` and `stderr` callbacks only process streaming output and return no value.
+
 /**
  * Prepend an argument
  * @param argument Argument
