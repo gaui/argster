@@ -4,7 +4,7 @@ import { FileUtils } from '../../src/utils';
 describe('searchFilesForPatterns', () => {
   test('it should find files for multiple patterns', () => {
     const utils = new FileUtils();
-    const rootDir = path.join(__dirname, '../e2e/data');
+    const rootDir = path.relative(process.cwd(), path.join(__dirname, '../e2e/data'));
     const patterns = ['**/*.env', '**/*.vol'];
     const files = utils.searchFilesForPatterns(patterns, rootDir);
 

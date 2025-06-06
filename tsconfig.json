@@ -1,15 +1,13 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "module": "esnext",
     "target": "es2022",
-    "lib": ["es2015","es2016","es2017","es2018","es2019", "dom"],
-    "sourceMap": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "lib": ["es2022"],
     "declaration": true,
-    "jsx": "react",
-    "moduleResolution": "node",
-    "rootDir": ".",
     "outDir": "lib",
+    "rootDir": ".",
+    "sourceMap": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -18,10 +16,9 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "noUnusedLocals": true,
+    "isolatedModules": true,
+    "types": ["vitest"]
   },
-  "include": [
-    "src",
-    "__tests__/**/*"
-  ],
-  "exclude": ["node_modules", "**/*.test.ts"]
+  "include": ["src", "__tests__"],
+  "exclude": ["node_modules"]
 }
