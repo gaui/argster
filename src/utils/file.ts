@@ -1,16 +1,12 @@
 import fs from 'fs';
 import glob from 'glob';
+import { IFileUtils, IArgumentFilePatterns } from '../types';
 
 export default class FileUtils implements IFileUtils {
-  private fsInstance: typeof fs;
-  private globInstance: typeof glob;
+  private fsInstance = fs;
+  private globInstance = glob;
 
-  public constructor(fsInstance?: typeof fs, globInstance?: typeof glob) {
-    this.fsInstance = fsInstance || fs;
-    this.globInstance = globInstance || glob;
-  }
-
-  public computeFiles(
+  public searchAndReadFiles(
     argumentFilePatterns: IArgumentFilePatterns[],
     rootDir: string
   ): IArgumentFilePatterns[] {
@@ -18,27 +14,11 @@ export default class FileUtils implements IFileUtils {
       const search = this.searchFilesForPatterns(argument.patterns, rootDir);
 
       if (search.length) {
-        argument.patterns = search;
+        argument.files = this.computeFileContents(search);
       }
     });
 
     return argumentFilePatterns;
-  }
-
-  public computeFileContents(
-    argumentFilePatterns: IArgumentFilePatterns[]
-  ): IArgumentFileContents[] {
-    const newArray = [] as IArgumentFileContents[];
-    argumentFilePatterns.forEach((argument: IArgumentFilePatterns) => {
-      const newArgument: IArgumentFileContents = ({} as unknown) as IArgumentFileContents;
-      newArgument.files = argument;
-      newArgument.contents = argument.patterns
-        .map((file: string) => this.readFileAsArray(file))
-        .reduce((prev: string[], cur: string[]) => prev.concat(cur));
-      newArray.push(newArgument);
-    });
-
-    return newArray;
   }
 
   public readFileAsArray(fileName: string): string[] {

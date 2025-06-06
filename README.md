@@ -4,7 +4,7 @@ A simple command/argument manager with a simple API that makes it easy to build 
 
 ## What
 
-The [Builder's](#builder) builds and manages commands. When a new `Builder` instance is created, it provides an simple API to create and execute commands, append and prepend dynamic arguments.
+The [Builder's](#builder) builds and manages commands. When a new `Builder` instance is created, it provides a simple API to create and execute commands, append and prepend dynamic arguments.
 
 When creating [commands](#command) through the builder, it goes through the list of file patterns recursively, reads each file, parses each line in the file, resolves dynamic variables to their values, and generates an executable command string. When a command is executed, it returns an object which contains both a _promise_ which is resolved or rejected based on how the process exits (0 / 1), along with a [Readable](https://nodejs.org/api/stream.html#stream_readable_streams) streams object for listening to stdout and stderr streams.
 
