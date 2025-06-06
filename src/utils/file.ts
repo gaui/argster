@@ -14,7 +14,7 @@ export default class FileUtils implements IFileUtils {
     argumentFilePatterns: IArgumentFilePatterns[],
     rootDir: string
   ): IArgumentFilePatterns[] {
-    argumentFilePatterns.forEach(argument => {
+    argumentFilePatterns.forEach((argument) => {
       const search = this.searchFilesForPatterns(argument.patterns, rootDir);
 
       if (search.length) {
@@ -43,7 +43,7 @@ export default class FileUtils implements IFileUtils {
 
   public readFileAsArray(fileName: string): string[] {
     const content = this.fsInstance.readFileSync(fileName, {
-      encoding: 'utf8'
+      encoding: 'utf8',
     });
     const contentArray = content
       .split('\n')
@@ -54,14 +54,17 @@ export default class FileUtils implements IFileUtils {
   }
 
   public searchFilesForPatterns(patterns: string[], rootDir: string): string[] {
-    const searchPattern = patterns.join('|');
     const globOptions = {
       cwd: rootDir,
       nodir: true,
       realpath: true,
-      root: rootDir
+      root: rootDir,
     };
 
-    return this.globInstance.sync(searchPattern, globOptions);
+    const results = patterns
+      .map((pattern) => this.globInstance.sync(pattern, globOptions))
+      .reduce<string[]>((prev, cur) => prev.concat(cur), []);
+
+    return results;
   }
 }
