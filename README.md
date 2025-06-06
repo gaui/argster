@@ -291,8 +291,8 @@ getAllCommands(): ICommand[];
  * @param stderr Callback on STDERR
  */
 exec(
-  stdout?: (chunk: string) => string,
-  stderr?: (chunk: string) => string
+  stdout?: (chunk: string) => void,
+  stderr?: (chunk: string) => void
 ): ICommandProcess;
 
 /**
