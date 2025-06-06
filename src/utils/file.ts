@@ -1,13 +1,11 @@
-import fs from 'fs';
-import glob from 'glob';
+import * as fs from 'fs';
+import { globSync } from 'glob';
 
 export default class FileUtils implements IFileUtils {
   private fsInstance: typeof fs;
-  private globInstance: typeof glob;
 
-  public constructor(fsInstance?: typeof fs, globInstance?: typeof glob) {
+  public constructor(fsInstance?: typeof fs) {
     this.fsInstance = fsInstance || fs;
-    this.globInstance = globInstance || glob;
   }
 
   public computeFiles(
@@ -55,7 +53,6 @@ export default class FileUtils implements IFileUtils {
 
   public searchFilesForPatterns(patterns: string[], rootDir: string): string[] {
     const globOptions = {
-      cwd: rootDir,
       nodir: true,
       realpath: true,
       root: rootDir
@@ -64,7 +61,7 @@ export default class FileUtils implements IFileUtils {
     let files: string[] = [];
 
     patterns.forEach(pattern => {
-      const matches = this.globInstance.sync(pattern, globOptions);
+      const matches = globSync(pattern, globOptions);
       files = files.concat(matches);
     });
 
