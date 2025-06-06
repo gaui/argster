@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": ".",
     "module": "esnext",
-    "target": "es2019",
+    "target": "es2022",
     "lib": ["es2015","es2016","es2017","es2018","es2019", "dom"],
     "sourceMap": true,
     "declaration": true,
@@ -21,7 +21,8 @@
     "noUnusedLocals": true,
   },
   "include": [
-    "src/**/*",
+    "src",
     "__tests__/**/*"
-  ]
+  ],
+  "exclude": ["node_modules", "**/*.test.ts"]
 }
