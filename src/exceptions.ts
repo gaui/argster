@@ -5,6 +5,8 @@ class VariableUnresolvableException extends Error {
   public constructor(obj: { [key: string]: string }) {
     super(obj.variable);
 
+    this.name = 'VariableUnresolvableException';
+
     this.variable = obj.variable;
     this.original = obj.original;
     this.argument = obj.argument;
