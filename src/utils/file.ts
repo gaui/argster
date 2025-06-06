@@ -54,7 +54,6 @@ export default class FileUtils implements IFileUtils {
   }
 
   public searchFilesForPatterns(patterns: string[], rootDir: string): string[] {
-    const searchPattern = patterns.join('|');
     const globOptions = {
       cwd: rootDir,
       nodir: true,
@@ -62,6 +61,13 @@ export default class FileUtils implements IFileUtils {
       root: rootDir
     };
 
-    return this.globInstance.sync(searchPattern, globOptions);
+    let files: string[] = [];
+
+    patterns.forEach(pattern => {
+      const matches = this.globInstance.sync(pattern, globOptions);
+      files = files.concat(matches);
+    });
+
+    return files;
   }
 }
