@@ -176,11 +176,12 @@ class Command implements ICommand {
     const command = cmd[type];
     if (command) {
       command.on('data', chunk => {
+        const stringChunk = chunk.toString();
         if (callback) {
-          callback(chunk);
+          callback(stringChunk);
         }
 
-        array.push(chunk);
+        array.push(stringChunk);
       });
     }
 
