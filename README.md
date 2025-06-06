@@ -49,7 +49,7 @@ cmd.prependArgument({
   prefix: '-t'
 });
 
-command.exec();
+cmd.exec();
 ```
 
 **2. And had this pattern file**
