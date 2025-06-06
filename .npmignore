@@ -2,7 +2,6 @@
 logs
 *.log
 npm*
-yarn*
 tsconfig.json
 examples/
 src/

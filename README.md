@@ -92,15 +92,7 @@ Checkout the [roadmap](#roadmap) for what to come.
 
 ## Setup
 
-You can install the npm package with yarn or npm:
-
-### yarn
-
-```bash
-yarn add argster
-```
-
-### npm
+You can install the npm package with npm:
 
 ```bash
 npm install argster
@@ -338,7 +330,7 @@ All contributions are very well appreciated. Just fork this repo and [submit a P
 
 Just remember to run the following beforehand:
 
-- `yarn test`
-- `yarn typecheck`
-- `yarn format`
-- `yarn lint`
+- `npm test`
+- `npm run typecheck`
+- `npm run format`
+- `npm run lint`
