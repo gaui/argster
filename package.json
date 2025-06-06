@@ -15,14 +15,14 @@
   },
   "scripts": {
     "build": "microbundle --target node",
-    "prepublishOnly": "yarn build",
+    "prepublishOnly": "npm run build",
     "test": "jest -i",
     "test:ci": "jest -i --coverage",
     "dts": "tsc --emitDeclarationOnly",
     "lint": "eslint --ext .ts src __tests__",
     "format": "prettier \"./{src,__tests__}/**/*.{js,jsx,ts,tsx,json,md}\" --write",
     "typecheck": "tsc --noEmit --pretty --skipLibCheck",
-    "vuln": "yarn audit --level high --no-progress --non-interactive --frozen-lockfile"
+    "vuln": "npm audit --audit-level=high"
   },
   "engines": {
     "node": "12.17.0"
