@@ -64,7 +64,7 @@ describe('default options', () => {
 describe('creating commands with default builder options', () => {
   test('it should warn on unresolved variable', () => {
     const mockLogUtil: ILogUtils = {
-      warn: jest.fn()
+      warn: vi.fn()
     };
 
     const fs = mock.fs('FOO=${BAR}');
@@ -122,7 +122,7 @@ describe('creating commands with default builder options', () => {
 describe('creating commands with non-default builder options', () => {
   test('it should warn on unresolved variable', () => {
     const mockLogUtil: ILogUtils = {
-      warn: jest.fn()
+      warn: vi.fn()
     };
 
     const fs = mock.fs('FOO=${BAR}');
@@ -137,7 +137,7 @@ describe('creating commands with non-default builder options', () => {
   });
 
   test('it should not warn on unresolved variable', () => {
-    const mockLogUtil: ILogUtils = { warn: jest.fn() };
+    const mockLogUtil: ILogUtils = { warn: vi.fn() };
 
     const fs = mock.fs('FOO=${BAR}');
     const utils = { file: new FileUtils(fs), log: mockLogUtil };

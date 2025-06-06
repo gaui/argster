@@ -16,8 +16,8 @@
   "scripts": {
     "build": "microbundle --target node",
     "prepublishOnly": "npm run build",
-    "test": "jest -i",
-    "test:ci": "jest -i --coverage",
+    "test": "vitest",
+    "test:ci": "vitest run --coverage",
     "dts": "tsc --emitDeclarationOnly",
     "lint": "eslint --ext .ts src __tests__",
     "format": "prettier \"./{src,__tests__}/**/*.{js,jsx,ts,tsx,json,md}\" --write",
@@ -48,6 +48,7 @@
     "microbundle": "0.15.1",
     "prettier": "3.5.3",
     "ts-jest": "^29.3.4",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "vitest": "^3.2.2"
   }
 }
