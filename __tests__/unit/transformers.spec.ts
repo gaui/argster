@@ -77,3 +77,28 @@ describe('creating commands with transformers disabled', () => {
     expect(cmd.toString()).toBe('test foo bar baz');
   });
 });
+
+describe('one', () => {
+  test('applies custom predicate and replacer', () => {
+    const t = transformers.one<string, string>({
+      predicate: (val: string) => val.startsWith('a'),
+      replacer: (val: string) => val.toUpperCase(),
+    });
+
+    expect(t('apple')).toBe('APPLE');
+    expect(t('banana')).toBe('banana');
+  });
+});
+
+describe('pattern', () => {
+  test('replaces all matches using provided transformer', () => {
+    const t = transformers.pattern<string, string>(/\bfoo\b/, {
+      predicate: () => true,
+      replacer: (val: string) => val.toUpperCase(),
+    });
+
+    const result = t('foo Foo foo foo1 foO');
+
+    expect(result).toBe('FOO FOO FOO foo1 FOO');
+  });
+});
