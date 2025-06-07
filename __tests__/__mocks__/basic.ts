@@ -15,6 +15,6 @@ export const createBuilder = (
   extraUtils?: IUtilsParam
 ): Builder => {
   const newUtils = utilFactory(extraUtils);
-  const newBuilder = new Builder({ rootDir: __dirname, ...options }, newUtils);
+  const newBuilder = new Builder({ rootDir: import.meta.dirname, ...options }, newUtils);
   return newBuilder;
 };

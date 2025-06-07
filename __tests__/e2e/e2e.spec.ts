@@ -2,7 +2,7 @@ import * as path from 'path';
 import { Builder } from '../../src';
 import Command from '../../src/command';
 
-const rootDir = path.join(__dirname, 'data');
+const rootDir = path.join(import.meta.dirname, 'data');
 
 const extensions: IArgumentFilePatterns[] = [
   {

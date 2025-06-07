@@ -32,7 +32,7 @@ export default class FileUtils implements IFileUtils {
       newArgument.files = argument;
       newArgument.contents = argument.patterns
         .map((file: string) => this.readFileAsArray(file))
-        .reduce((prev: string[], cur: string[]) => prev.concat(cur));
+        .reduce((prev: string[], cur: string[]) => prev.concat(cur), []);
       newArray.push(newArgument);
     });
 
@@ -54,9 +54,9 @@ export default class FileUtils implements IFileUtils {
   public searchFilesForPatterns(patterns: string[], rootDir: string): string[] {
     const globOptions = {
       nodir: true,
-      realpath: true,
-      root: rootDir
-    };
+      absolute: true,
+      cwd: rootDir
+    } as const;
 
     let files: string[] = [];
 
@@ -65,6 +65,6 @@ export default class FileUtils implements IFileUtils {
       files = files.concat(matches);
     });
 
-    return files;
+    return Array.from(new Set(files));
   }
 }
