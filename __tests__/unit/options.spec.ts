@@ -216,4 +216,15 @@ describe('creating commands with non-default builder options', () => {
 
     expect(cmd.toString()).toBe('test --env FOO=$BAR');
   });
+
+  test('it should not convert variables when option is false', () => {
+    const fs = mock.fs('FOO=%BAR%');
+    const utils = { file: new FileUtils(fs), log: mock.logUtils };
+
+    const builder = mock.createBuilder({ convertVariables: false }, utils);
+
+    const cmd = builder.createCommand('test', extensions);
+
+    expect(cmd.toString()).toBe('test --env FOO=%BAR%');
+  });
 });
