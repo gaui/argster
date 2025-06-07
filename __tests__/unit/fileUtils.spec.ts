@@ -1,4 +1,6 @@
 import path from 'path';
+import { vi } from 'vitest';
+import mockFs from 'mock-fs';
 import { FileUtils } from '../../src/utils';
 
 describe('searchFilesForPatterns', () => {
@@ -53,5 +55,52 @@ describe('computeFileContents', () => {
     const results = utils.computeFileContents(patterns);
 
     expect(results[0].contents).toEqual([]);
+  });
+});
+
+describe('FileUtils.computeFiles', () => {
+  afterEach(() => {
+    mockFs.restore();
+  });
+
+  test('replaces patterns with absolute paths and removes duplicates', () => {
+    mockFs(
+      {
+        '/tmp': {
+          'a.env': '',
+          'b.env': ''
+        }
+      },
+      { createTmp: false }
+    );
+
+    const utils = new FileUtils();
+
+    const patterns: IArgumentFilePatterns[] = [
+      { prefix: '--f', patterns: ['*.env', 'a.env'] }
+    ];
+
+    const results = utils.computeFiles(patterns, '/tmp');
+    const files = results[0].patterns;
+
+    expect(files).toEqual(expect.arrayContaining(['/tmp/a.env', '/tmp/b.env']));
+    expect(files.length).toBe(2);
+    expect(files.every(p => path.isAbsolute(p))).toBe(true);
+  });
+});
+
+describe('FileUtils.readFileAsArray', () => {
+  afterEach(() => {
+    mockFs.restore();
+  });
+
+  test('returns trimmed non-empty lines', () => {
+    mockFs({ '/tmp/sample.txt': 'foo\nbar\n\n  baz  \n' }, { createTmp: false });
+
+    const utils = new FileUtils();
+
+    const arr = utils.readFileAsArray('/tmp/sample.txt');
+
+    expect(arr).toEqual(['foo', 'bar', 'baz']);
   });
 });
